@@ -1,10 +1,13 @@
 #ifndef __INIT__
 #define __INIT__
 
-  joueur *initJoueurs();
+  joueur *initJoueurs(int nbjoueurs);
   fleche *initrose();
-  int **initage(int *N);
-  cellule **initplateau(int *N);
-  int terminate(cellule **plateau, fleche *rose, int **age, int *N);
+  cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose);
+  int terminate(cellule **plateau, fleche *rose, int N);
+  int affectationcouleur(int nbj, joueur *tabjoueurs);
+  void depart2(cellule **plateau, int x, int y, color a, color b);
+  void depart3(cellule **plateau, int x, int y, color a, color b, color c);
+  int ras(cellule **plateau, int x, int y, fleche *rose, int N);
 
 #endif

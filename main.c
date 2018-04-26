@@ -4,31 +4,35 @@
 #include "initreversi.h"
 
   cellule **plateau=NULL;
-  int **age=NULL;
   fleche *rose=NULL;
-  int cpt=0,res,tour=0,N=0;
+  int cpt=0,res,tour=0,N=0,nbjoueurs=0;
   joueur *tabjoueurs;
 
 int main()
 {
   rose = initrose();
-  plateau=initplateau(&N);
-  age=initage(&N);
-  tabjoueurs=initJoueurs();
+
+  while(nbjoueurs>6 || nbjoueurs<2){
+    printf("Combien de joueurs ? (2-6)\n");
+    scanf("%d",&nbjoueurs);
+  }
+
+  tabjoueurs=initJoueurs(nbjoueurs);
+  plateau=initplateau(&N,nbjoueurs,tabjoueurs,rose);
   //ne rien changer avant
 
   while(cpt!=-1){
     tour++;
-    affichage(plateau,tour,&N);
-    res=pose(plateau,rose,tabjoueurs[cpt],age,tour,&N);
-    cpt=(cpt+1)%2;
+    affichage(plateau,tour,N);
+    res=pose(plateau,rose,tabjoueurs[cpt].couleur,tour,N);
+    cpt=(cpt+1)%nbjoueurs;
     if(res==0){
-      cpt=checkfin(plateau,rose,tabjoueurs,cpt,&N);
+      cpt=checkfin(plateau,rose,tabjoueurs,cpt,N,nbjoueurs);
     }
   }
-  scores(plateau,tabjoueurs,&N);
+  scores(plateau,tabjoueurs,N,nbjoueurs);
 
   //ne rien changer apres
-  terminate(plateau,rose,age,&N);
+  terminate(plateau,rose,N);
   return (0);
 }
