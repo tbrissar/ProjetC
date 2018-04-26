@@ -20,7 +20,14 @@ char getSymbole(color coul, content cont)
                 break;
     case trou : return('X');
                 break;
-    case pion : return((char)((int)coul));
+    case pion : switch(coul){
+                  case vert : return('1');break;
+                  case rouge : return('2');break;
+                  case bleu  : return('3');break;
+                  case orange : return('4');break;
+                  case violet : return('5');break;
+                  case jaune : return('6');break;
+    }
                 break;
   }
   exit(ERREUR_GET_SYMBOLE);
@@ -30,13 +37,20 @@ char getSymbole(color coul, content cont)
 void affichage(cellule **plateau, int tour, int N)
 {
   //system("clear");
-  printf("\nTour : %d\n\n   ",tour);
+  printf("\nTour : %d\n\n    ",tour);
   for(int k=0;k<N;k++){
+    if(k<10){
     printf(" %d ",k);
+  }else{
+    printf("%d ",k);
+  }
   }
   printf(" y\n");
   for(int i=0;i<N;i++){
     printf(" %d ",i);
+    if(i<10){
+      printf(" ");
+    }
     for(int j=0;j<N;j++){
       printf("[%c]",getSymbole(plateau[i][j].couleur,plateau[i][j].contenu));
     }

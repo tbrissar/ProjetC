@@ -6,17 +6,18 @@
 #include "initreversi.h"
 
 #define ERREUR_ALLOCATION_MEMOIRE 1
+#define ERREUR_INIT_PLATEAU 4
 
 //donne automatiquement une couleur aux joueurs
 int affectationcouleur(int nbj, joueur *tabjoueurs)
 {
   switch(nbj){
-    case 1 : tabjoueurs[1].couleur=vert;return(0);
-    case 2 : tabjoueurs[2].couleur=rouge;break;
-    case 3 : tabjoueurs[3].couleur=bleu;break;
-    case 4 : tabjoueurs[4].couleur=orange;break;
-    case 5 : tabjoueurs[5].couleur=violet;break;
-    case 6 : tabjoueurs[6].couleur=jaune;break;
+    case 1 : tabjoueurs[0].couleur=vert;return(0);
+    case 2 : tabjoueurs[1].couleur=rouge;break;
+    case 3 : tabjoueurs[2].couleur=bleu;break;
+    case 4 : tabjoueurs[3].couleur=orange;break;
+    case 5 : tabjoueurs[4].couleur=violet;break;
+    case 6 : tabjoueurs[5].couleur=jaune;break;
   }
   return(affectationcouleur(nbj-1,tabjoueurs));
 }
@@ -104,27 +105,22 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
 
   system("clear");
 
-      printf("TEST1");
-
   switch(nbjoueurs){
     case 2 : *N=6;nbmaxbombes=20;break;
-    case 3 : *N=9;nbmaxbombes=56;break;
+    case 3 : *N=7;nbmaxbombes=26;break;
     case 4 : *N=11;nbmaxbombes=57;break;
     case 5 : *N=13;nbmaxbombes=83;break;
     case 6 : *N=13;nbmaxbombes=69;break;
+    default : exit(ERREUR_INIT_PLATEAU);
   }
 
-  printf("TEST2\n");
-
-  plateau=malloc(*N*sizeof(cellule*));
+  plateau=malloc(*N*sizeof(*plateau));
   if(plateau==NULL){
     exit(ERREUR_ALLOCATION_MEMOIRE);
   }
 
-  printf("TEST3\n");
-
   for(i=0;i<*N;i++){
-    plateau[i]=malloc(*N*sizeof(cellule));
+    plateau[i]=malloc(*N*sizeof(**plateau));
     if(plateau[i]==NULL){
       for(j=i-1;j>=0;j--){
         free(plateau[j]);
@@ -138,30 +134,26 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
     }
   }
 
-  printf("TEST4\n");
-
-
-
-
   switch(nbjoueurs){
-    case 2 : depart2(plateau,2,2,vert,rouge);
-    case 3 : depart3(plateau,3,3,vert,rouge,bleu);
+    case 2 : depart2(plateau,2,2,vert,rouge);break;
+    case 3 : depart3(plateau,2,2,vert,rouge,bleu);break;
     case 4 : depart2(plateau,2,2,vert,rouge);
              depart2(plateau,2,7,bleu,orange);
              depart2(plateau,7,7,vert,rouge);
-             depart2(plateau,7,2,bleu,orange);
+             depart2(plateau,7,2,bleu,orange);break;
     case 5 : depart2(plateau,2,2,vert,rouge);
              depart3(plateau,2,8,bleu,orange,violet);
              depart2(plateau,9,9,vert,rouge);
-             depart3(plateau,8,2,bleu,orange,violet);
+             depart3(plateau,8,2,bleu,orange,violet);break;
     case 6 : depart3(plateau,2,2,vert,rouge,bleu);
              depart3(plateau,2,8,orange,violet,jaune);
              depart3(plateau,8,8,vert,rouge,bleu);
-             depart3(plateau,8,2,orange,violet,jaune);
+             depart3(plateau,8,2,orange,violet,jaune);break;
+    default : exit(ERREUR_INIT_PLATEAU);
   }
 
   do{
-    printf("Combien de bombes voulez-vous ? (maximum %d)\n",nbmaxbombes);
+    printf("Combien de bombes ? (maximum %d)\n",nbmaxbombes);
     scanf("%d",&nbbombes);
   }while(nbbombes>nbmaxbombes);
   for(int i=1;i<=nbbombes;i++){
@@ -172,7 +164,6 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
     }while(cell.contenu==pion || cell.contenu==bombe || !ras(plateau,randomX,randomY,rose,*N));
     plateau[randomX][randomY].contenu=bombe;
   }
-  printf("INIT PLATEAU TERMINE\n");
   return(plateau);
 }
 
