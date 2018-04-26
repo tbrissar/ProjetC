@@ -28,7 +28,7 @@ int trahison(cellule **plateau, fleche *rose, int **age, int tour, int *N)
       for(j=0;j<*N;j++){
         currentage=age[i][j];
         if(currentage>0){
-          if((((float)rand()/INT_MAX)*somme) <= (float)currentage){
+          if((((float)rand()/INT_MAX)*somme) <= ((float)currentage)){
             couleur=plateau[i][j];
             //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
             //XXXCOULEURS NON GENERIQUESXXX

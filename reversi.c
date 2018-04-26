@@ -156,13 +156,13 @@ int verifcouprestant(cellule **plateau, fleche *rose, joueur j, int *N)
 {
   direction dir,dirinverse;
   cellule couleur=j.couleur,c;
-  int x,y;
+  int x,y,bestx,besty,bestmove=0,currentmove;
 
   for(int i=0;i<*N;i++){
     for(int j=0;j<*N;j++){
       c=plateau[i][j];
       if(c!=couleur && c!=bombe && c!=vide && c!=trou){
-        printf("J'ai trouve un enemie en %d,%d\n",i,j);
+        //  printf("J'ai trouve un ennemi en %d,%d\n",i,j);
         for(int k=0;k<8;k++){
           dir=rose[k].dir;
           if(checkbords(i,j,dir,N)){
@@ -170,16 +170,24 @@ int verifcouprestant(cellule **plateau, fleche *rose, joueur j, int *N)
             x=i+dir.hori;
             y=j+dir.verti;
             dirinverse=directioninverse(rose,dir);
-            if((c==vide || c==bombe) && (checkcapture(plateau,x,y,dirinverse,couleur,N)>0)){
-              printf("De %d,%d je peux l'avoir\n",x,y);
-              return(1);
+            currentmove=checkcapture(plateau,x,y,dirinverse,couleur,N);
+            if((c==vide || c==bombe) && (currentmove>0)){
+              if(currentmove>bestmove){
+                bestmove=currentmove;
+                bestx=x;besty=y;
+              }
+              //printf("De %d,%d je peux l'avoir\n",x,y);
             }
-            printf("Pas depuis %d,%d  ",x,y);
+            //printf("Pas depuis %d,%d  ",x,y);
           }
         }
         printf("\n");
       }
     }
+  }
+  if(bestmove>0){
+    printf("Le meilleur coup immediat est en %d,%d\n",bestx,besty);
+    return(1);
   }
   return(0);
 }
