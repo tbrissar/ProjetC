@@ -9,11 +9,10 @@
 
 //incremente l'age des pions, declenche les trahisons puis en gere les repercussions
 //renvoie 0 s'il n'y a pas eu de trahison
-int trahison(cellule **plateau, fleche *rose, int tour, int N)
+int trahison(cellule **plateau, fleche *rose, int tour, int N, int nbjoueurs)
 {
   int somme=0,i,j,currentage;
   color coul,macoul;
-
   for(i=0;i<N;i++){
     for(j=0;j<N;j++){
       if(plateau[i][j].age>0){
@@ -30,7 +29,7 @@ int trahison(cellule **plateau, fleche *rose, int tour, int N)
         if(currentage>0){
           if((((float)rand()/INT_MAX)*somme) <= ((float)currentage)){
             macoul=coul=plateau[i][j].couleur;
-            while(macoul==coul){
+            while(macoul==coul || (int)macoul>nbjoueurs){
               macoul=couleuraleatoire();
             }
             plateau[i][j].couleur=macoul;

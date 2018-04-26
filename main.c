@@ -12,19 +12,14 @@ int main()
 {
   rose = initrose();
 
-  while(nbjoueurs>6 || nbjoueurs<2){
-    printf("Combien de joueurs ? (2-6)\n");
-    scanf("%d",&nbjoueurs);
-  }
-
-  tabjoueurs=initJoueurs(nbjoueurs);
+  tabjoueurs=initJoueurs(&nbjoueurs);
   plateau=initplateau(&N,nbjoueurs,tabjoueurs,rose);
   //ne rien changer avant
 
   while(cpt!=-1){
     tour++;
     affichage(plateau,tour,N);
-    res=pose(plateau,rose,tabjoueurs[cpt].couleur,tour,N);
+    res=pose(plateau,rose,tabjoueurs[cpt],tour,N,nbjoueurs);
     cpt=(cpt+1)%nbjoueurs;
     if(res==0){
       cpt=checkfin(plateau,rose,tabjoueurs,cpt,N,nbjoueurs);

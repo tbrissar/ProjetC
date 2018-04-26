@@ -8,6 +8,8 @@
 #define ERREUR_ALLOCATION_MEMOIRE 1
 #define ERREUR_INIT_PLATEAU 4
 
+#define nbjoker 5
+
 //donne automatiquement une couleur aux joueurs
 int affectationcouleur(int nbj, joueur *tabjoueurs)
 {
@@ -23,16 +25,40 @@ int affectationcouleur(int nbj, joueur *tabjoueurs)
 }
 
 //renvoie le tableau de joueurs
-joueur *initJoueurs(int nbjoueurs)
+joueur *initJoueurs(int *nbjoueurs)
 {
-  int nbj=nbjoueurs;
+  int nbj,nbjoueursh=-1,nbjoueurso=0,nb;
 
-  joueur *tabjoueurs=malloc(sizeof(joueur)*nbjoueurs);
+  while(nbjoueursh>6 || nbjoueursh<0){
+    printf("Combien de joueurs humains ? (0-6)\n");
+    scanf("%d",&nbjoueursh);
+  }
+  do{
+    nb=2-nbjoueursh;
+    if(nb<0){
+      nb=0;
+    }
+    printf("Combien de joueurs ordi ? (%d-%d)\n",nb,6-nbjoueursh);
+    scanf("%d",&nbjoueurso);
+    *nbjoueurs=nbjoueursh+nbjoueurso;
+  }while(*nbjoueurs>6 || *nbjoueurs<2);
+
+  nbj=*nbjoueurs;
+
+  joueur *tabjoueurs=malloc(sizeof(joueur)**nbjoueurs);
   if(tabjoueurs==NULL){
     free(tabjoueurs);
     exit(ERREUR_ALLOCATION_MEMOIRE);
   }
   affectationcouleur(nbj,tabjoueurs);
+
+  for(int i=0;i<nbjoueursh;i++){
+    tabjoueurs[i].ordi=0;
+    tabjoueurs[i].joker=nbjoker;
+  }
+  for(int j=nbjoueursh;j<*nbjoueurs;j++){
+    tabjoueurs[j].ordi=1;
+  }
   return(tabjoueurs);
 }
 

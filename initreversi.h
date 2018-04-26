@@ -1,7 +1,7 @@
 #ifndef __INIT__
 #define __INIT__
 
-  joueur *initJoueurs(int nbjoueurs);
+joueur *initJoueurs(int *nbjoueurs);
   fleche *initrose();
   cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose);
   int terminate(cellule **plateau, fleche *rose, int N);

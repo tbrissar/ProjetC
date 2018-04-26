@@ -9,6 +9,7 @@
     color couleur;
     int joker;
     int nbcoups;
+    int ordi;
   }joueur;
   typedef struct{
     content contenu;
@@ -24,6 +25,10 @@
     direction dir;
     int nbcases;
   }fleche;
+  typedef struct{
+    int coordx;
+    int coordy;
+  }coord;
 
 
   char getSymbole(color coul, content cont);
@@ -31,8 +36,8 @@
   int checkbords(int i, int j, direction dir, int N);
   int checkcapture(cellule **plateau, int x, int y, direction dir, color coul, int N);
   void capture(cellule **plateau, fleche *rose, int x, int y, color coul);
-  int pose(cellule **plateau, fleche *rose, color coul, int tour, int N);
-  int verifcouprestant(cellule **plateau, fleche *rose, color coul, int N);
+  int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueurs);
+  coord verifcouprestant(cellule **plateau, fleche *rose, color coul, int N);
   direction directioninverse(fleche *rose, direction dir);
   int checkfin(cellule **plateau, fleche *rose, joueur *tabjoueurs, int cpt, int N, int nbjoueurs);
   void scores(cellule **plateau, joueur *tabjoueurs, int N, int nbjoueurs);

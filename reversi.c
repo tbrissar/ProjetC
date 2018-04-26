@@ -8,13 +8,13 @@
 
 #define ERREUR_GET_SYMBOLE 2
 #define ERREUR_COULEUR_ALEATOIRE 3
-#define mode 'D'
+#define modeaffichage 'D'
 
 //traduction du type case en caractere
 char getSymbole(color coul, content cont)
 {
   switch(cont){
-    case bombe : if(mode=='D'){return('o');}else{return(' ');}
+    case bombe : if(modeaffichage=='D'){return('o');}else{return(' ');}
                 break;
     case vide : return(' ');
                 break;
@@ -128,49 +128,58 @@ void capture(cellule **plateau, fleche *rose, int x, int y, color coul)
 
 //pose d'un pion
 //renvoie 0 si le joueur n'a pas pu jouer
-int pose(cellule **plateau, fleche *rose, color coul, int tour, int N)
+int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueurs)
 {
   int x,y,s=0;
   content cont=pion;
+  coord bestcoord;
+  color coul=j.couleur;
   char symbolejoueur=getSymbole(coul,cont);
 
   printf("C'est a %c de jouer\n",symbolejoueur);
-
-  if(verifcouprestant(plateau,rose,coul,N)==0){
+  bestcoord=verifcouprestant(plateau,rose,coul,N);
+  if(bestcoord.coordx==-1){
     system("clear");
     printf("%c ne peux pas jouer\n",symbolejoueur);
-    trahison(plateau,rose,tour,N);
+    trahison(plateau,rose,tour,N,nbjoueurs);
     return(0);
   }
 
   while(s==0){
+    if(j.ordi==0){
     printf("Entrez la case ou vous souhaitez jouer %c (au format x,y)\n",symbolejoueur);
     scanf("%d,%d",&x,&y);
+  }else{
+    x=bestcoord.coordx;
+    y=bestcoord.coordy;
+  }
     for(int i=0;i<8;i++){
       rose[i].nbcases=checkcapture(plateau,x,y,rose[i].dir,coul,N);
       s+=rose[i].nbcases;
     }
   }
 
+  system("sleep 1");
   system("clear");
-
+  printf("%d,%d\n",x,y);
   if(plateau[x][y].contenu==bombe){
     explosion(plateau,coul,rose,x,y,N);
   }else{
     capture(plateau,rose,x,y,coul);
   }
 
-  trahison(plateau,rose,tour,N);
+  trahison(plateau,rose,tour,N,nbjoueurs);
 
   return(1);
 }
 
-//renvoie 1 si le joueur a au moins un coup jouable
-int verifcouprestant(cellule **plateau, fleche *rose, color coul, int N)
+//renvoie -1 en coordonnées si le joueur a au moins un coup jouable
+coord verifcouprestant(cellule **plateau, fleche *rose, color coul, int N)
 {
   direction dir,dirinverse;
   cellule cell;
   int x,y,bestx,besty,bestmove=0,currentmove;
+  coord coordcoup={-1,-1};
 
   for(int i=0;i<N;i++){
     for(int j=0;j<N;j++){
@@ -201,9 +210,11 @@ int verifcouprestant(cellule **plateau, fleche *rose, color coul, int N)
   }
   if(bestmove>0){
     printf("Le meilleur coup immediat est en %d,%d\n",bestx,besty);
-    return(1);
+    coordcoup.coordx=bestx;
+    coordcoup.coordy=besty;
+    return(coordcoup);
   }
-  return(0);
+  return(coordcoup);
 }
 
 //renvoie la direction inverse
@@ -222,7 +233,7 @@ direction directioninverse(fleche *rose, direction dir)
 int checkfin(cellule **plateau, fleche *rose, joueur *tabjoueurs, int cpt, int N, int nbjoueurs)
 {
   for(int k=cpt;k<nbjoueurs;k++,(cpt++)%2){
-    if(verifcouprestant(plateau,rose,tabjoueurs[k].couleur,N)!=0){
+    if(verifcouprestant(plateau,rose,tabjoueurs[k].couleur,N).coordx!=-1){
       return(k);
     };
   }
