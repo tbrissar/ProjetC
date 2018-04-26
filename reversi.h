@@ -2,7 +2,20 @@
 #ifndef __REVERSI__
 #define __REVERSI__
 
-  typedef enum{vide=0,trou,bombe,vert,rouge}cellule;
+  typedef enum{vert=1,rouge,bleu,orange,violet,jaune}color;
+  typedef enum{vide=0,pion,bombe,trou}content;
+  //un joueur a une couleur, un nombre de coups possibles ainsi que des joker
+  typedef struct{
+    color couleur;
+    int joker;
+    int nbcoups;
+    int ordi;
+  }joueur;
+  typedef struct{
+    content contenu;
+    color couleur;
+    int age;
+  }cellule;
   typedef struct{
     int hori;
     int verti;
@@ -12,21 +25,22 @@
     direction dir;
     int nbcases;
   }fleche;
-  //un joueur a une couleur et un nombre de coups possibles
   typedef struct{
-    cellule couleur;
-    int nbcoups;
-  }joueur;
+    int coordx;
+    int coordy;
+  }coord;
 
-  char getSymbole(cellule c);
-  void affichage(cellule **plateau, int tour, int *N);
-  int checkbords(int i, int j, direction dir, int *N);
-  int checkcapture(cellule **plateau, int x, int y, direction dir, cellule c, int *N);
-  void capture(cellule **plateau, fleche *rose, int x, int y, int **age, cellule c);
-  int pose(cellule **plateau, fleche *rose, joueur j, int **age, int tour, int *N);
-  int verifcouprestant(cellule **plateau, fleche *rose, joueur j, int *N);
+
+  char getSymbole(color coul, content cont);
+  void affichage(cellule **plateau, int tour, int N);
+  int checkbords(int i, int j, direction dir, int N);
+  int checkcapture(cellule **plateau, int x, int y, direction dir, color coul, int N);
+  void capture(cellule **plateau, fleche *rose, int x, int y, color coul);
+  int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueurs);
+  coord verifcouprestant(cellule **plateau, fleche *rose, color coul, int N);
   direction directioninverse(fleche *rose, direction dir);
-  int checkfin(cellule **plateau, fleche *rose, joueur *tabjoueurs, int cpt, int *N);
-  void scores(cellule **plateau, joueur *tabjoueurs, int *N);
+  int checkfin(cellule **plateau, fleche *rose, joueur *tabjoueurs, int cpt, int N, int nbjoueurs);
+  void scores(cellule **plateau, joueur *tabjoueurs, int N, int nbjoueurs);
+  color couleuraleatoire();
 
 #endif

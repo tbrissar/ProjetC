@@ -9,40 +9,35 @@
 
 //incremente l'age des pions, declenche les trahisons puis en gere les repercussions
 //renvoie 0 s'il n'y a pas eu de trahison
-int trahison(cellule **plateau, fleche *rose, int **age, int tour, int *N)
+int trahison(cellule **plateau, fleche *rose, int tour, int N, int nbjoueurs)
 {
   int somme=0,i,j,currentage;
-  cellule couleur;
-
-  for(i=0;i<*N;i++){
-    for(j=0;j<*N;j++){
-      if(age[i][j]>0){
-        age[i][j]++;
-        somme+=age[i][j];
+  color coul,macoul;
+  for(i=0;i<N;i++){
+    for(j=0;j<N;j++){
+      if(plateau[i][j].age>0){
+        plateau[i][j].age++;
+        somme+=plateau[i][j].age;
       }
     }
   }
   if(tour>=signal){
     srand(time(NULL));
-    for(i=0;i<*N;i++){
-      for(j=0;j<*N;j++){
-        currentage=age[i][j];
+    for(i=0;i<N;i++){
+      for(j=0;j<N;j++){
+        currentage=plateau[i][j].age;
         if(currentage>0){
           if((((float)rand()/INT_MAX)*somme) <= ((float)currentage)){
-            couleur=plateau[i][j];
-            //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-            //XXXCOULEURS NON GENERIQUESXXX
-            //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-            if(couleur==vert){
-              plateau[i][j]=couleur=rouge;
-            }else{
-              plateau[i][j]=couleur=vert;
+            macoul=coul=plateau[i][j].couleur;
+            while(macoul==coul || (int)macoul>nbjoueurs){
+              macoul=couleuraleatoire();
             }
-            age[i][j]=1;
+            plateau[i][j].couleur=macoul;
+            plateau[i][j].age=1;
             for(int k=0;k<8;k++){
-              rose[k].nbcases=checkcapture(plateau,i,j,rose[k].dir,couleur,N);
+              rose[k].nbcases=checkcapture(plateau,i,j,rose[k].dir,macoul,N);
             }
-            capture(plateau,rose,i,j,age,couleur);
+            capture(plateau,rose,i,j,macoul);
             printf("%d,%d a trahi! Le fourbe!\n",i,j);
             return(1);
           }
