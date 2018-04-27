@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
@@ -129,7 +128,7 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
   cellule **plateau,cell;
   srand(time(NULL));
 
-  system("clear");
+  system(clear);
 
   switch(nbjoueurs){
     case 2 : *N=6;nbmaxbombes=20;break;
