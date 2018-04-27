@@ -43,6 +43,7 @@ char getSymbole(color coul, content cont)
 //affichage d'une plateau sur la sortie standard
 void affichage(cellule **plateau, int tour, int N, int modejeu, int nbjoueurs, joueur *tabjoueurs)
 {
+  printf("AFFICHAGE\n");
   char affiche[650];
   char buffer[30];
   bzero(affiche,650);
@@ -82,6 +83,7 @@ void affichage(cellule **plateau, int tour, int N, int modejeu, int nbjoueurs, j
   if(modejeu==1){
     broadcast(affiche,nbjoueurs,tabjoueurs);
   }
+  printf("AFFICHAGE FIN\n");
 }
 
 //pour verifier si l'on va sur un bord

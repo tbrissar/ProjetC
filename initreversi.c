@@ -128,7 +128,7 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
   cellule **plateau,cell;
   srand(time(NULL));
 
-  system(clear);
+
 
   switch(nbjoueurs){
     case 2 : *N=6;nbmaxbombes=20;break;
@@ -193,11 +193,12 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
 }
 
 //desallouage d'un plateau
-int terminate(cellule **plateau, fleche *rose, int N)
+int terminate(cellule **plateau, fleche *rose,int N, joueur *tabjoueurs)
 {
   for(int i=N-1;i>=0;i--){
     free(plateau[i]);
   }
+  free(tabjoueurs);
   free(plateau);
   free(rose);
   return(0);
