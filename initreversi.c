@@ -4,15 +4,10 @@
 #include "reversi.h"
 #include "initreversi.h"
 
-#define ERREUR_ALLOCATION_MEMOIRE 1
-#define ERREUR_INIT_PLATEAU 4
-
-#define nbjoker 5
-
 //donne automatiquement une couleur aux joueurs
-int affectationcouleur(int nbj, joueur *tabjoueurs)
+int affectationcouleur(int nbjoueurs, joueur *tabjoueurs)
 {
-  switch(nbj){
+  switch(nbjoueurs){
     case 1 : tabjoueurs[0].couleur=vert;return(0);
     case 2 : tabjoueurs[1].couleur=rouge;break;
     case 3 : tabjoueurs[2].couleur=bleu;break;
@@ -20,44 +15,24 @@ int affectationcouleur(int nbj, joueur *tabjoueurs)
     case 5 : tabjoueurs[4].couleur=violet;break;
     case 6 : tabjoueurs[5].couleur=jaune;break;
   }
-  return(affectationcouleur(nbj-1,tabjoueurs));
+  return(affectationcouleur(nbjoueurs-1,tabjoueurs));
 }
 
 //renvoie le tableau de joueurs
 joueur *initJoueurs(int *nbjoueurs)
 {
-  int nbj,nbjoueursh=-1,nbjoueurso=0,nb;
-
-  while(nbjoueursh>6 || nbjoueursh<0){
-    printf("Combien de joueurs humains ? (0-6)\n");
-    scanf("%d",&nbjoueursh);
+  while(*nbjoueurs>6 || *nbjoueurs<0){
+    printf("Combien de joueurs ? (0-6)\n");
+    scanf("%d",nbjoueurs);
   }
-  do{
-    nb=2-nbjoueursh;
-    if(nb<0){
-      nb=0;
-    }
-    printf("Combien de joueurs ordi ? (%d-%d)\n",nb,6-nbjoueursh);
-    scanf("%d",&nbjoueurso);
-    *nbjoueurs=nbjoueursh+nbjoueurso;
-  }while(*nbjoueurs>6 || *nbjoueurs<2);
-
-  nbj=*nbjoueurs;
 
   joueur *tabjoueurs=malloc(sizeof(joueur)**nbjoueurs);
   if(tabjoueurs==NULL){
     free(tabjoueurs);
     exit(ERREUR_ALLOCATION_MEMOIRE);
   }
-  affectationcouleur(nbj,tabjoueurs);
+  affectationcouleur(*nbjoueurs,tabjoueurs);
 
-  for(int i=0;i<nbjoueursh;i++){
-    tabjoueurs[i].ordi=0;
-    tabjoueurs[i].joker=nbjoker;
-  }
-  for(int j=nbjoueursh;j<*nbjoueurs;j++){
-    tabjoueurs[j].ordi=1;
-  }
   return(tabjoueurs);
 }
 
@@ -127,8 +102,6 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
   int randomX,randomY,nbbombes,i,j,nbmaxbombes;
   cellule **plateau,cell;
   srand(time(NULL));
-
-
 
   switch(nbjoueurs){
     case 2 : *N=6;nbmaxbombes=20;break;

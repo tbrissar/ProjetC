@@ -10,14 +10,6 @@
 #include "initreversi.h"
 #include "multi.h"
 
-#ifdef WIN32
-#define clear "cls"
-#define sleep "CHOICE /T 1"
-#else
-#define clear "clear"
-#define sleep "sleep 1"
-#endif
-
   void jeu(int N, int nbjoueurs, joueur *tabjoueurs, fleche *rose, cellule **plateau, int modejeu)
   {
     printf("JEU\n");
@@ -35,11 +27,12 @@
     scores(plateau,tabjoueurs,N,nbjoueurs);
   }
 
-  void init(int *nbjoueurs, joueur *tabjoueurs, fleche *rose, int *N, cellule **plateau)
+  void init(int *nbjoueurs, joueur **tabjoueurs, fleche **rose, int *N, cellule ***plateau)
   {
     printf("INIT\n");
-    rose = initrose();
-    plateau=initplateau(N,*nbjoueurs,tabjoueurs,rose);
+    *rose = initrose();
+    *tabjoueurs=initJoueurs(nbjoueurs);
+    *plateau=initplateau(N,*nbjoueurs,*tabjoueurs,*rose);
   }
 
   void server(joueur *tabjoueurs, int nbjoueurs, int N, fleche *rose, cellule **plateau, int modejeu)
@@ -48,12 +41,13 @@
     int *tabsock;
 
     tabsock=connectionserver(tabjoueurs,nbjoueurs);
-    broadcast("La partie commence",nbjoueurs,tabjoueurs);
+    broadcast("La partie commence\n",nbjoueurs,tabjoueurs);
     jeu(N,nbjoueurs,tabjoueurs,rose,plateau,modejeu);
     for(int i=0;i<nbjoueurs+1;i++){
       close(tabsock[i]);
     }
     free(tabsock);
+    printf("FIN SERVER\n");
   }
 
   void client()
@@ -62,19 +56,42 @@
     int sockfd;
 
     sockfd=connectionclient();
-    char *buffer=malloc(sizeof(char)*10);
+    char *buffer=calloc(10,sizeof(char));
 
     do{
-      getmessage(sockfd,buffer);
+      getmessage(sockfd,&buffer);
+
+      //on saisie une case
+      if(strcmp(buffer,"pose")==0){
+        printf("J'ai bien vu pose\n");
+        int x,y;
+        getmessage(sockfd,&buffer);
+        printf("%s",buffer);
+        buffer=realloc(buffer,sizeof(int)*2);
+        scanf("%d,%d",&x,&y);
+        memset(buffer,0,sizeof(int)*2);
+        sprintf(buffer,"%d",x);
+        sendmessage(sockfd,buffer);
+        memset(buffer,0,sizeof(int)*2);
+        sprintf(buffer,"%d",y);
+        sendmessage(sockfd,buffer);
+        buffer=realloc(buffer,sizeof(char)*10);
+      }else if(strcmp(buffer,"clear")==0){
+        system(clear);
+      }else{
+        printf("%s",buffer);
+      }
     }while(strcmp(buffer,"fin")!=0);
+
     free(buffer);
     //REMEMBER TO CLOSE SOCKETS
     close(sockfd);
+    printf("FIN CLIENT\n");
   }
 
   cellule **plateau=NULL;
   fleche *rose=NULL;
-  int N=0,nbjoueurs=0,multirole=-1,n,res=1;
+  int N=0,nbjoueurs=-1,multirole=-1,n,res=1;
   // n: return value for write() and read()
   joueur *tabjoueurs=NULL;
 
@@ -95,15 +112,14 @@ int main()
 
   //PARTIE EN LOCAL
 
-  tabjoueurs=initJoueurs(&nbjoueurs);
-  init(&nbjoueurs,tabjoueurs,rose,&N,plateau);
+  init(&nbjoueurs,&tabjoueurs,&rose,&N,&plateau);
 
   for(int i=0;i<nbjoueurs && res>0;i++){
     res=fork();
   }
   if(res==0){
     system("gnome-terminal");
-    system("sleep 2");
+    system(sleepconnection);
     client();
   }else if(res>0){
     server(tabjoueurs,nbjoueurs,N,rose,plateau,modejeu);
@@ -125,8 +141,7 @@ int main()
 
     //server
     if(multirole==1){
-      tabjoueurs=initJoueurs(&nbjoueurs);
-      init(&nbjoueurs,tabjoueurs,rose,&N,plateau);
+      init(&nbjoueurs,&tabjoueurs,&rose,&N,&plateau);
       server(tabjoueurs,nbjoueurs,N,rose,plateau,modejeu);
     //client
     }else if(multirole==0){

@@ -13,10 +13,6 @@
 #include "traitre.h"
 #include "multi.h"
 
-#define ERREUR_GET_SYMBOLE 2
-#define ERREUR_COULEUR_ALEATOIRE 3
-#define modeaffichage 'D'
-
 //traduction du type case en caractere
 char getSymbole(color coul, content cont)
 {
@@ -46,42 +42,42 @@ void affichage(cellule **plateau, int tour, int N, int modejeu, int nbjoueurs, j
   printf("AFFICHAGE\n");
   char affiche[650];
   char buffer[30];
-  bzero(affiche,650);
-  bzero(buffer,30);
+  memset(affiche,0,650);
+  memset(buffer,0,30);
 
   sprintf(buffer,"\nTour : %d\n\n    ",tour);
   strcat(affiche,buffer);
-  bzero(buffer,30);
+  memset(buffer,0,30);
   for(int k=0;k<N;k++){
     if(k<10){
     sprintf(buffer," %d ",k);
     strcat(affiche,buffer);
-    bzero(buffer,30);
+    memset(buffer,0,30);
   }else{
     sprintf(buffer,"%d ",k);
     strcat(affiche,buffer);
-    bzero(buffer,30);
+    memset(buffer,0,30);
   }
   }
   strcat(affiche," y\n");
   for(int i=0;i<N;i++){
     sprintf(buffer," %d ",i);
     strcat(affiche,buffer);
-    bzero(buffer,30);
+    memset(buffer,0,30);
     if(i<10){
       strcat(affiche," ");
     }
     for(int j=0;j<N;j++){
       sprintf(buffer,"[%c]",getSymbole(plateau[i][j].couleur,plateau[i][j].contenu));
       strcat(affiche,buffer);
-      bzero(buffer,30);
+      memset(buffer,0,30);
     }
     strcat(affiche,"\n");
   }
   strcat(affiche," x\n\n");
-  printf("%s",affiche);
   if(modejeu==1){
     broadcast(affiche,nbjoueurs,tabjoueurs);
+
   }
   printf("AFFICHAGE FIN\n");
 }
@@ -161,28 +157,34 @@ int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueu
   content cont=pion;
   coord bestcoord;
   color coul=j.couleur;
-  char symbolejoueur=getSymbole(coul,cont), buffer[100];bzero(buffer,100);
+  char symbolejoueur=getSymbole(coul,cont);
+  char *buffer=calloc(100,sizeof(char));
 
   sprintf(buffer,"C'est a %c de jouer\n",symbolejoueur);
   broadcast(buffer,nbjoueurs,tabjoueurs);
-  bzero(buffer,100);
-  bestcoord=verifcouprestant(plateau,rose,coul,N);
+  memset(buffer,0,strlen(buffer));
+  bestcoord=verifcouprestant(plateau,rose,j,N);
   if(bestcoord.coordx==-1){
-    system(clear);
+    broadcast("clear",nbjoueurs,tabjoueurs);
     sprintf(buffer,"%c ne peux pas jouer\n",symbolejoueur);
     broadcast(buffer,nbjoueurs,tabjoueurs);
-    bzero(buffer,100);
-    trahison(plateau,rose,tour,N,nbjoueurs);
+    memset(buffer,0,strlen(buffer));
+    trahison(plateau,rose,tour,N,nbjoueurs,tabjoueurs);
     return(0);
   }
 
   while(s==0){
     if(j.ordi==0){
+    sendmessage(j.sockfd,"pose");
     sprintf(buffer,"Entrez la case ou vous souhaitez jouer %c (au format x,y)\n",symbolejoueur);
     sendmessage(j.sockfd,buffer);
-    bzero(buffer,100);
-    getmessage(j.sockfd,buffer);
-    scanf("%d,%d",&x,&y);
+    memset(buffer,0,strlen(buffer));
+    getmessage(j.sockfd,&buffer);
+    x=atoi(buffer);
+    memset(buffer,0,strlen(buffer));
+    getmessage(j.sockfd,&buffer);
+    y=atoi(buffer);
+    memset(buffer,0,strlen(buffer));
   }else{
     x=bestcoord.coordx;
     y=bestcoord.coordy;
@@ -193,27 +195,28 @@ int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueu
     }
   }
 
-  system(sleep);
-  system(clear);
-  printf("%d,%d\n",x,y);
+  system(sleepslow);
+  broadcast("clear",nbjoueurs,tabjoueurs);
   if(plateau[x][y].contenu==bombe){
-    explosion(plateau,coul,rose,x,y,N);
+    explosion(plateau,coul,rose,x,y,N,nbjoueurs,tabjoueurs);
   }else{
     capture(plateau,rose,x,y,coul);
   }
 
-  trahison(plateau,rose,tour,N,nbjoueurs);
+  trahison(plateau,rose,tour,N,nbjoueurs,tabjoueurs);
 
+  free(buffer);
   return(1);
 }
 
 //renvoie -1 en coordonnées si le joueur a au moins un coup jouable
-coord verifcouprestant(cellule **plateau, fleche *rose, color coul, int N)
+coord verifcouprestant(cellule **plateau, fleche *rose, joueur j, int N)
 {
   direction dir,dirinverse;
   cellule cell;
   int x,y,bestx,besty,bestmove=0,currentmove;
   coord coordcoup={-1,-1};
+  color coul=j.couleur;
 
   for(int i=0;i<N;i++){
     for(int j=0;j<N;j++){
@@ -243,9 +246,13 @@ coord verifcouprestant(cellule **plateau, fleche *rose, color coul, int N)
     }
   }
   if(bestmove>0){
-    printf("Le meilleur coup immediat est en %d,%d\n",bestx,besty);
+    char *buffer=calloc(50,sizeof(char));
+    memset(buffer,0,strlen(buffer));
+    sprintf(buffer,"Le meilleur coup immediat est en %d,%d\n",bestx,besty);
+    sendmessage(j.sockfd,buffer);
     coordcoup.coordx=bestx;
     coordcoup.coordy=besty;
+    free(buffer);
     return(coordcoup);
   }
   return(coordcoup);
@@ -267,7 +274,7 @@ direction directioninverse(fleche *rose, direction dir)
 int checkfin(cellule **plateau, fleche *rose, joueur *tabjoueurs, int cpt, int N, int nbjoueurs)
 {
   for(int k=cpt;k<nbjoueurs;k++,(cpt++)%2){
-    if(verifcouprestant(plateau,rose,tabjoueurs[k].couleur,N).coordx!=-1){
+    if(verifcouprestant(plateau,rose,tabjoueurs[k],N).coordx!=-1){
       return(k);
     };
   }
@@ -281,6 +288,7 @@ void scores(cellule **plateau, joueur *tabjoueurs, int N, int nbjoueurs)
   color coul;
   content cont=pion;
   cellule cell;
+  char *buffer=calloc(50,sizeof(char));
 
   for(int k=0;k<nbjoueurs;k++){
     coul=tabjoueurs[k].couleur;
@@ -292,8 +300,12 @@ void scores(cellule **plateau, joueur *tabjoueurs, int N, int nbjoueurs)
           score++;
       }
     }
-    printf("Le joueur %c a un score de %d\n",getSymbole(coul,cont),score);
+    sprintf(buffer,"Le joueur %c a un score de %d\n",getSymbole(coul,cont),score);
+    broadcast(buffer,nbjoueurs,tabjoueurs);
+    broadcast("fin",nbjoueurs,tabjoueurs);
+    memset(buffer,0,50);
   }
+  free(buffer);
 }
 
 color couleuraleatoire()

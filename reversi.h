@@ -1,14 +1,7 @@
-
 #ifndef __REVERSI__
 #define __REVERSI__
 
-  #ifdef WIN32
-  #define clear "cls"
-  #define sleep "CHOICE /T 1"
-  #else
-  #define clear "clear"
-  #define sleep "sleep 1"
-  #endif
+  #include "macros.h"
 
   typedef enum{vert=1,rouge,bleu,orange,violet,jaune}color;
   typedef enum{vide=0,pion,bombe,trou}content;
@@ -46,7 +39,7 @@
   int checkcapture(cellule **plateau, int x, int y, direction dir, color coul, int N);
   void capture(cellule **plateau, fleche *rose, int x, int y, color coul);
   int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueurs, int modejeu, joueur *tabjoueurs);
-  coord verifcouprestant(cellule **plateau, fleche *rose, color coul, int N);
+  coord verifcouprestant(cellule **plateau, fleche *rose, joueur j, int N);
   direction directioninverse(fleche *rose, direction dir);
   int checkfin(cellule **plateau, fleche *rose, joueur *tabjoueurs, int cpt, int N, int nbjoueurs);
   void scores(cellule **plateau, joueur *tabjoueurs, int N, int nbjoueurs);

@@ -4,15 +4,16 @@
 #include <limits.h>
 #include "reversi.h"
 #include "traitre.h"
-
-#define signal 4
+#include "multi.h"
 
 //incremente l'age des pions, declenche les trahisons puis en gere les repercussions
 //renvoie 0 s'il n'y a pas eu de trahison
-int trahison(cellule **plateau, fleche *rose, int tour, int N, int nbjoueurs)
+int trahison(cellule **plateau, fleche *rose, int tour, int N, int nbjoueurs, joueur *tabjoueurs)
 {
   int somme=0,i,j,currentage;
   color coul,macoul;
+  char *buffer=calloc(50,sizeof(char));
+
   for(i=0;i<N;i++){
     for(j=0;j<N;j++){
       if(plateau[i][j].age>0){
@@ -38,7 +39,8 @@ int trahison(cellule **plateau, fleche *rose, int tour, int N, int nbjoueurs)
               rose[k].nbcases=checkcapture(plateau,i,j,rose[k].dir,macoul,N);
             }
             capture(plateau,rose,i,j,macoul);
-            printf("%d,%d a trahi! Le fourbe!\n",i,j);
+            sprintf(buffer,"%d,%d a trahi! Le fourbe!\n",i,j);
+            broadcast(buffer,nbjoueurs,tabjoueurs);
             return(1);
           }
           somme-=currentage;
@@ -46,5 +48,6 @@ int trahison(cellule **plateau, fleche *rose, int tour, int N, int nbjoueurs)
       }
     }
   }
+  free(buffer);
   return(0);
 }

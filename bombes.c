@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "reversi.h"
 #include "bombes.h"
-
+#include "multi.h"
 
 //vide les cases situés autour de celel passée en paramètre
 void init3x3(cellule **plateau, fleche *rose, int x, int y, int N)
@@ -19,14 +19,15 @@ void init3x3(cellule **plateau, fleche *rose, int x, int y, int N)
 }
 
 //explosion d'une bombe a effet aleatoire
-void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N)
+void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N, int nbjoueurs, joueur *tabjoueurs)
 {
   direction dir;
   cellule cell;
   color macoul=coul;
   srand(time(NULL));
 
-  printf("Bombe : ");
+
+  broadcast("Bombe : ",nbjoueurs,tabjoueurs);
   switch(rand()%5){
     case 0 :
             //laser ultra puissant
@@ -44,7 +45,7 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N)
             plateau[x][y].contenu=pion;
             plateau[x][y].couleur=coul;
             plateau[x][y].age=1;
-            printf("Laser!");
+            broadcast("Laser!",nbjoueurs,tabjoueurs);
             break;
     case 1 :
             //change la couleur du pion qui vient d'etre pose
@@ -54,7 +55,7 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N)
             plateau[x][y].couleur=macoul;
             plateau[x][y].contenu=pion;
             plateau[x][y].age=1;
-            printf("Changement de couleur!");
+            broadcast("Changement de couleur!",nbjoueurs,tabjoueurs);
             break;
     case 2 :
             //seul reste le pion joue
@@ -62,24 +63,24 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N)
             plateau[x][y].couleur=coul;
             plateau[x][y].contenu=pion;
             plateau[x][y].age=1;
-            printf("Survivant!");
+            broadcast("Survivant!",nbjoueurs,tabjoueurs);
             break;
     case 3 :
             //explosion normale + case inutilisable
             init3x3(plateau,rose,x,y,N);
             plateau[x][y].contenu=trou;
             plateau[x][y].age=0;
-            printf("Mayhem!");
+            broadcast("Mayhem!",nbjoueurs,tabjoueurs);
             break;
     case 4 :
             //explosion normale
             init3x3(plateau,rose,x,y,N);
             plateau[x][y].contenu=vide;
             plateau[x][y].age=0;
-            printf("Classique!");
+            broadcast("Classique!",nbjoueurs,tabjoueurs);
             break;
     default :
-            printf("explosion() : valeur aleatoire incorrecte");
+            broadcast("explosion() : valeur aleatoire incorrecte",nbjoueurs,tabjoueurs);
             exit(0);
   }
   printf("\n");
