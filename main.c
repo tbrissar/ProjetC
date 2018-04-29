@@ -12,7 +12,7 @@
 
   void jeu(int N, int nbjoueurs, joueur *tabjoueurs, fleche *rose, cellule **plateau, int modejeu)
   {
-    printf("JEU\n");
+    //printf("JEU\n");
     int cpt=0,tour=0,res;
 
     while(cpt!=-1){
@@ -29,7 +29,7 @@
 
   void init(int *nbjoueurs, joueur **tabjoueurs, fleche **rose, int *N, cellule ***plateau)
   {
-    printf("INIT\n");
+    //printf("INIT\n");
     *rose = initrose();
     *tabjoueurs=initJoueurs(nbjoueurs);
     *plateau=initplateau(N,*nbjoueurs,*tabjoueurs,*rose);
@@ -37,7 +37,7 @@
 
   void server(joueur *tabjoueurs, int nbjoueurs, int N, fleche *rose, cellule **plateau, int modejeu)
   {
-    printf("SERVER\n");
+    //printf("SERVER\n");
     int *tabsock;
 
     tabsock=connectionserver(tabjoueurs,nbjoueurs);
@@ -49,12 +49,12 @@
       close(tabsock[i]);
     }
     free(tabsock);
-    printf("FIN SERVER\n");
+    //printf("FIN SERVER\n");
   }
 
   void client()
   {
-    printf("CLIENT\n");
+    //printf("CLIENT\n");
     int sockfd;
     int fin=0;
 
@@ -92,7 +92,7 @@
     free(buffer);
     //REMEMBER TO CLOSE SOCKETS
     close(sockfd);
-    printf("FIN CLIENT\n");
+    //printf("FIN CLIENT\n");
   }
 
   cellule **plateau=NULL;

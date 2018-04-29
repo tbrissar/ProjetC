@@ -27,14 +27,14 @@ void sendmessage(int sockfd, char *message)
 
   //sending the length of the message
   sprintf(messagelengthchar,"%ld",messagelength);
-  printf("Sending length: %s\n",messagelengthchar);
+  //printf("Sending length: %s\n",messagelengthchar);
   if(write(sockfd,messagelengthchar,strlen(messagelengthchar))<0){
     error("ERROR writing messagelength to socket\n");
   }
   system(sleepsend);
 
   //sending the message
-  printf("Sending: %s\n",message);
+  //printf("Sending: %s\n",message);
   if(write(sockfd,message,messagelength)<0){
     error("ERROR writing message to socket\n");
   }
@@ -60,7 +60,7 @@ void getmessage(int newsockfd, char **buffer)
   }
 
   buffersize=atoi(buffersizechar)+1;
-  printf("Taille du message a recevoir:%d\n",buffersize-1);
+  //printf("Taille du message a recevoir:%d\n",buffersize-1);
   *buffer=realloc(*buffer,sizeof(char)*buffersize);
   if(*buffer==NULL){
     error("ERROR realloc");
@@ -70,7 +70,7 @@ void getmessage(int newsockfd, char **buffer)
 
   memset(*buffer,0,buffersize);
   //read message
-  printf("reading message\n");
+  //printf("reading message\n");
   if(read(newsockfd,*buffer,buffersize)<0){
     error("ERROR reading from socket");
   }
@@ -85,7 +85,7 @@ void getmessage(int newsockfd, char **buffer)
 
 int *connectionserver(joueur *tabjoueurs, int nbjoueurs)
 {
-  printf("CONNEXION SERVER\n");
+  //printf("CONNEXION SERVER\n");
 
   char *messageconnection=calloc(10,sizeof(char));
   int *tabsock=calloc((nbjoueurs+1),sizeof(int));
@@ -151,7 +151,7 @@ int *connectionserver(joueur *tabjoueurs, int nbjoueurs)
   tabsock[nbjoueurs]=sockfd;
   free(messageconnection);
   free(adresse);
-  printf("FIN CONNEXION SERVER\n");
+  //printf("FIN CONNEXION SERVER\n");
   return(tabsock);
 }
 
@@ -163,7 +163,7 @@ int *connectionserver(joueur *tabjoueurs, int nbjoueurs)
 
 int connectionclient()
 {
-  printf("CONNEXION CLIENT\n");
+  //printf("CONNEXION CLIENT\n");
   struct sockaddr_in serv_addr;//server adress
   struct hostent *server=NULL;
   char *hostname=calloc(30,sizeof(char));
@@ -217,7 +217,7 @@ int connectionclient()
 
   free(messageconnection);
   free(hostname);
-  printf("FIN CONNEXION CLIENT\n");
+  //printf("FIN CONNEXION CLIENT\n");
 
   return(sockfd);
 }

@@ -302,9 +302,9 @@ void scores(cellule **plateau, joueur *tabjoueurs, int N, int nbjoueurs)
     }
     sprintf(buffer,"Le joueur %c a un score de %d\n",getSymbole(coul,cont),score);
     broadcast(buffer,nbjoueurs,tabjoueurs);
-    broadcast("fin",nbjoueurs,tabjoueurs);
     memset(buffer,0,50);
   }
+  broadcast("fin",nbjoueurs,tabjoueurs);
   free(buffer);
 }
 
