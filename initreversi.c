@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "reversi.h"
 #include "initreversi.h"
+#include "macros.h"
 
 //donne automatiquement une couleur aux joueurs
 int affectationcouleur(int nbjoueurs, joueur *tabjoueurs)
@@ -21,8 +22,8 @@ int affectationcouleur(int nbjoueurs, joueur *tabjoueurs)
 //renvoie le tableau de joueurs
 joueur *initJoueurs(int *nbjoueurs)
 {
-  while(*nbjoueurs>6 || *nbjoueurs<0){
-    printf("Combien de joueurs ? (0-6)\n");
+  while(*nbjoueurs>6 || *nbjoueurs<2){
+    printf("Combien de joueurs ? (2-6)\n");
     scanf("%d",nbjoueurs);
   }
 
@@ -166,7 +167,7 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
 }
 
 //desallouage d'un plateau
-int terminate(cellule **plateau, fleche *rose,int N, joueur *tabjoueurs)
+int terminate(cellule **plateau, fleche *rose,int N, joueur *tabjoueurs, int *tabsock)
 {
   for(int i=N-1;i>=0;i--){
     free(plateau[i]);
@@ -174,5 +175,15 @@ int terminate(cellule **plateau, fleche *rose,int N, joueur *tabjoueurs)
   free(tabjoueurs);
   free(plateau);
   free(rose);
+  free(tabsock);
+
   return(0);
+}
+
+void init(int *nbjoueurs, joueur **tabjoueurs, fleche **rose, int *N, cellule ***plateau)
+{
+  //printf("INIT\n");
+  *rose = initrose();
+  *tabjoueurs=initJoueurs(nbjoueurs);
+  *plateau=initplateau(N,*nbjoueurs,*tabjoueurs,*rose);
 }

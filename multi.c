@@ -8,7 +8,9 @@
 #include <netdb.h> //to use hostent
 #include <time.h>
 #include <arpa/inet.h>
+#include "macros.h"
 #include "reversi.h"
+#include "multi.h"
 
 //http://www.linuxhowtos.org/C_C++/socket.htm
 
@@ -83,7 +85,7 @@ void getmessage(int newsockfd, char **buffer)
 ///////////////////////////////////////
 
 
-int *connectionserver(joueur *tabjoueurs, int nbjoueurs)
+int *connectionserver(joueur *tabjoueurs, int nbjoueurs, char *modejeu)
 {
   //printf("CONNEXION SERVER\n");
 
@@ -95,7 +97,7 @@ int *connectionserver(joueur *tabjoueurs, int nbjoueurs)
     error("ERREUR ALLOCATION CONNEXION SERVER");
   }
 
-  int sockfd,portno=2500;
+  int sockfd,portno=2500,timer=0,res=1;
   socklen_t clilen;//adress size
   struct sockaddr_in serv_addr, cli_addr;//contains an internet adress
 
@@ -114,22 +116,30 @@ int *connectionserver(joueur *tabjoueurs, int nbjoueurs)
 
   char *adresse=calloc(INET_ADDRSTRLEN,sizeof(char));
   inet_ntop(AF_INET,&serv_addr.sin_addr,adresse,INET_ADDRSTRLEN);
-  printf("Mon adresse est %s\n",adresse);
+  printf("Mon adresse est (A FAIRE)%s\n",adresse);
   memset(adresse,0,INET_ADDRSTRLEN);
 
+
   //binds a socket to an adress
-  clock_t start=clock(),end;
-  while(bind(sockfd, (struct sockaddr*)&serv_addr,sizeof(serv_addr))<0){ //requires socket fd, adress to bind (POINTER) and size of the adress
+  while(bind(sockfd,(struct sockaddr*)&serv_addr,sizeof(serv_addr))<0){ //requires socket fd, adress to bind (POINTER) and size of the adress
    system(sleepconnection);
-   end=clock();
-   if((double)(end-start)/CLOCKS_PER_SEC > attente){
+   timer++;
+   if(timer>attente){
      error("ERROR binding");
    }
   }
 
   int ordi=-1,currentsockfd;
 
-  for(int i=0;i<nbjoueurs;i++){
+  for(int i=0;i<nbjoueurs && res>0 ;i++){
+
+    //si en local, le serveur cree lui-meme les clients
+    res=fork();
+    if(strcmp(modejeu,"local")==0 && res>0){
+      printf("J'ouvre une fenêtre i:%d\n",i);
+      system("gnome-terminal --command=\"./client localhost\"");
+    }
+
     listen(sockfd,5);//listen on the socket for connections, second arg must be set to 5
     clilen = sizeof(cli_addr);//client adress size
     //returns a new fd needed to communicate on this connection
@@ -161,7 +171,7 @@ int *connectionserver(joueur *tabjoueurs, int nbjoueurs)
 ///////////////////////////////////////
 
 
-int connectionclient()
+int connectionclient(char *adress)
 {
   //printf("CONNEXION CLIENT\n");
   struct sockaddr_in serv_addr;//server adress
@@ -178,10 +188,12 @@ int connectionclient()
     error("ERROR opening socket");
   }
 
+  strcpy(hostname,adress);
+  server=gethostbyname(hostname);
+
   while(server==NULL){
     printf("Entrez le nom/adresse de l'hôte\n");
     scanf("%s",hostname);
-
     //takes name of host and returns a pointer to a hostent
     server=gethostbyname(hostname);
   }

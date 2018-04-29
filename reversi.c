@@ -12,6 +12,7 @@
 #include "bombes.h"
 #include "traitre.h"
 #include "multi.h"
+#include "macros.h"
 
 //traduction du type case en caractere
 char getSymbole(color coul, content cont)
@@ -37,7 +38,7 @@ char getSymbole(color coul, content cont)
 }
 
 //affichage d'une plateau sur la sortie standard
-void affichage(cellule **plateau, int tour, int N, int modejeu, int nbjoueurs, joueur *tabjoueurs)
+void affichage(cellule **plateau, int tour, int N, int nbjoueurs, joueur *tabjoueurs)
 {
   //printf("AFFICHAGE\n");
   char affiche[650];
@@ -75,9 +76,8 @@ void affichage(cellule **plateau, int tour, int N, int modejeu, int nbjoueurs, j
     strcat(affiche,"\n");
   }
   strcat(affiche," x\n\n");
-  if(modejeu==1){
-    broadcast(affiche,nbjoueurs,tabjoueurs);
-  }
+
+  broadcast(affiche,nbjoueurs,tabjoueurs);
   printf("%s",affiche);
   //printf("AFFICHAGE FIN\n");
 }
@@ -151,7 +151,7 @@ void capture(cellule **plateau, fleche *rose, int x, int y, color coul)
 
 //pose d'un pion
 //renvoie 0 si le joueur n'a pas pu jouer
-int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueurs, int modejeu, joueur *tabjoueurs)
+int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueurs, joueur *tabjoueurs)
 {
   int x,y,s=0;
   content cont=pion;

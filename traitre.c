@@ -5,6 +5,7 @@
 #include "reversi.h"
 #include "traitre.h"
 #include "multi.h"
+#include "macros.h"
 
 //incremente l'age des pions, declenche les trahisons puis en gere les repercussions
 //renvoie 0 s'il n'y a pas eu de trahison

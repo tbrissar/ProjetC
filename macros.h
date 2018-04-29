@@ -9,7 +9,7 @@
   #define modeaffichage 'D'
   #define nbjoker 5
   #define signal 4  //nombre de tour avant le debut des trahisons
-  #define attente 60 //temps d'attente de connection
+  #define attente 60 //temps d'attente de connection en secondes
 
   #ifdef _WIN32
 
@@ -24,7 +24,7 @@
   #define clear "clear"
   #define sleepsend "sleep 0.1"
   #define sleepread "sleep 0.005"
-  #define sleepconnection "sleep 0.25"
+  #define sleepconnection "sleep 1"
   #define sleepslow "sleep 1"
 
   #endif

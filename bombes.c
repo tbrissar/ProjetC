@@ -45,7 +45,7 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
             plateau[x][y].contenu=pion;
             plateau[x][y].couleur=coul;
             plateau[x][y].age=1;
-            broadcast("Laser!",nbjoueurs,tabjoueurs);
+            broadcast("Laser!\n",nbjoueurs,tabjoueurs);
             break;
     case 1 :
             //change la couleur du pion qui vient d'etre pose
@@ -55,7 +55,7 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
             plateau[x][y].couleur=macoul;
             plateau[x][y].contenu=pion;
             plateau[x][y].age=1;
-            broadcast("Changement de couleur!",nbjoueurs,tabjoueurs);
+            broadcast("Changement de couleur!\n",nbjoueurs,tabjoueurs);
             break;
     case 2 :
             //seul reste le pion joue
@@ -63,25 +63,24 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
             plateau[x][y].couleur=coul;
             plateau[x][y].contenu=pion;
             plateau[x][y].age=1;
-            broadcast("Survivant!",nbjoueurs,tabjoueurs);
+            broadcast("Survivant!\n",nbjoueurs,tabjoueurs);
             break;
     case 3 :
             //explosion normale + case inutilisable
             init3x3(plateau,rose,x,y,N);
             plateau[x][y].contenu=trou;
             plateau[x][y].age=0;
-            broadcast("Mayhem!",nbjoueurs,tabjoueurs);
+            broadcast("Mayhem!\n",nbjoueurs,tabjoueurs);
             break;
     case 4 :
             //explosion normale
             init3x3(plateau,rose,x,y,N);
             plateau[x][y].contenu=vide;
             plateau[x][y].age=0;
-            broadcast("Classique!",nbjoueurs,tabjoueurs);
+            broadcast("Classique!\n",nbjoueurs,tabjoueurs);
             break;
     default :
-            broadcast("explosion() : valeur aleatoire incorrecte",nbjoueurs,tabjoueurs);
-            exit(0);
+            error("explosion() : valeur aleatoire incorrecte");
   }
   printf("\n");
 }
