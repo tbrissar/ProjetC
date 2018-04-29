@@ -13,7 +13,7 @@
   void jeu(int N, int nbjoueurs, joueur *tabjoueurs, fleche *rose, cellule **plateau, int modejeu)
   {
     //printf("JEU\n");
-    int cpt=0,tour=0,res;
+    int cpt=0,tour=0,res=0;
 
     while(cpt!=-1){
       tour++;
@@ -56,7 +56,7 @@
   {
     //printf("CLIENT\n");
     int sockfd;
-    int fin=0;
+    int fin=0,x,y;
 
     sockfd=connectionclient();
     char *buffer=calloc(10,sizeof(char));
@@ -66,19 +66,19 @@
 
       //on saisie une case
       if(strcmp(buffer,"pose")==0){
-        printf("J'ai bien vu pose\n");
-        int x,y;
         getmessage(sockfd,&buffer);
         printf("%s",buffer);
-        buffer=realloc(buffer,sizeof(int)*2);
-        scanf("%d,%d",&x,&y);
-        memset(buffer,0,sizeof(int)*2);
-        sprintf(buffer,"%d",x);
-        sendmessage(sockfd,buffer);
-        memset(buffer,0,sizeof(int)*2);
-        sprintf(buffer,"%d",y);
-        sendmessage(sockfd,buffer);
-        buffer=realloc(buffer,sizeof(char)*10);
+        do{
+          buffer=realloc(buffer,sizeof(int)*3);
+          scanf("%d,%d",&x,&y);
+          memset(buffer,0,sizeof(int)*3);
+          sprintf(buffer,"%d",x);
+          sendmessage(sockfd,buffer);
+          memset(buffer,0,sizeof(int)*3);
+          sprintf(buffer,"%d",y);
+          sendmessage(sockfd,buffer);
+          getmessage(sockfd,&buffer);
+        }while(strcmp(buffer,"poseok")!=0);
       }else if(strcmp(buffer,"clear")==0){
         system(clear);
       }else if(strcmp(buffer,"fin")==0){

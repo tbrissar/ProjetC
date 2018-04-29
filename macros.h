@@ -22,7 +22,7 @@
   #elif __linux__
 
   #define clear "clear"
-  #define sleepsend "sleep 0.01"
+  #define sleepsend "sleep 0.1"
   #define sleepread "sleep 0.005"
   #define sleepconnection "sleep 0.25"
   #define sleepslow "sleep 1"

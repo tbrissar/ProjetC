@@ -39,7 +39,7 @@ char getSymbole(color coul, content cont)
 //affichage d'une plateau sur la sortie standard
 void affichage(cellule **plateau, int tour, int N, int modejeu, int nbjoueurs, joueur *tabjoueurs)
 {
-  printf("AFFICHAGE\n");
+  //printf("AFFICHAGE\n");
   char affiche[650];
   char buffer[30];
   memset(affiche,0,650);
@@ -77,9 +77,9 @@ void affichage(cellule **plateau, int tour, int N, int modejeu, int nbjoueurs, j
   strcat(affiche," x\n\n");
   if(modejeu==1){
     broadcast(affiche,nbjoueurs,tabjoueurs);
-
   }
-  printf("AFFICHAGE FIN\n");
+  printf("%s",affiche);
+  //printf("AFFICHAGE FIN\n");
 }
 
 //pour verifier si l'on va sur un bord
@@ -163,36 +163,42 @@ int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueu
   sprintf(buffer,"C'est a %c de jouer\n",symbolejoueur);
   broadcast(buffer,nbjoueurs,tabjoueurs);
   memset(buffer,0,strlen(buffer));
+
   bestcoord=verifcouprestant(plateau,rose,j,N);
   if(bestcoord.coordx==-1){
     broadcast("clear",nbjoueurs,tabjoueurs);
     sprintf(buffer,"%c ne peux pas jouer\n",symbolejoueur);
     broadcast(buffer,nbjoueurs,tabjoueurs);
-    memset(buffer,0,strlen(buffer));
     trahison(plateau,rose,tour,N,nbjoueurs,tabjoueurs);
+    free(buffer);
     return(0);
   }
 
-  while(s==0){
-    if(j.ordi==0){
+  if(j.ordi==1){
+    x=bestcoord.coordx;
+    y=bestcoord.coordy;
+    for(int i=0;i<8;i++){
+      rose[i].nbcases=checkcapture(plateau,bestcoord.coordx,bestcoord.coordy,rose[i].dir,coul,N);
+      s+=rose[i].nbcases;
+    }
+  }else{
     sendmessage(j.sockfd,"pose");
     sprintf(buffer,"Entrez la case ou vous souhaitez jouer %c (au format x,y)\n",symbolejoueur);
     sendmessage(j.sockfd,buffer);
-    memset(buffer,0,strlen(buffer));
-    getmessage(j.sockfd,&buffer);
-    x=atoi(buffer);
-    memset(buffer,0,strlen(buffer));
-    getmessage(j.sockfd,&buffer);
-    y=atoi(buffer);
-    memset(buffer,0,strlen(buffer));
-  }else{
-    x=bestcoord.coordx;
-    y=bestcoord.coordy;
-  }
-    for(int i=0;i<8;i++){
-      rose[i].nbcases=checkcapture(plateau,x,y,rose[i].dir,coul,N);
-      s+=rose[i].nbcases;
+    while(s==0){
+      getmessage(j.sockfd,&buffer);
+      x=atoi(buffer);
+      getmessage(j.sockfd,&buffer);
+      y=atoi(buffer);
+      for(int i=0;i<8;i++){
+        rose[i].nbcases=checkcapture(plateau,x,y,rose[i].dir,coul,N);
+        s+=rose[i].nbcases;
+      }
+      if(s==0){
+        sendmessage(j.sockfd,"posepasok");
+      }
     }
+    sendmessage(j.sockfd,"poseok");
   }
 
   system(sleepslow);
