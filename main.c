@@ -41,7 +41,9 @@
     int *tabsock;
 
     tabsock=connectionserver(tabjoueurs,nbjoueurs);
+    broadcast("clear",nbjoueurs,tabjoueurs);
     broadcast("La partie commence\n",nbjoueurs,tabjoueurs);
+    system(sleepslow);
     jeu(N,nbjoueurs,tabjoueurs,rose,plateau,modejeu);
     for(int i=0;i<nbjoueurs+1;i++){
       close(tabsock[i]);
@@ -54,11 +56,12 @@
   {
     printf("CLIENT\n");
     int sockfd;
+    int fin=0;
 
     sockfd=connectionclient();
     char *buffer=calloc(10,sizeof(char));
 
-    do{
+    while(fin==0){
       getmessage(sockfd,&buffer);
 
       //on saisie une case
@@ -78,10 +81,13 @@
         buffer=realloc(buffer,sizeof(char)*10);
       }else if(strcmp(buffer,"clear")==0){
         system(clear);
+      }else if(strcmp(buffer,"fin")==0){
+        fin=1;
+        printf("Partie terminée\n");
       }else{
         printf("%s",buffer);
       }
-    }while(strcmp(buffer,"fin")!=0);
+    }
 
     free(buffer);
     //REMEMBER TO CLOSE SOCKETS

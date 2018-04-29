@@ -18,14 +18,16 @@ void error(const char *msg)
   exit(1);
 }
 
+void getmessage(int newsockfd, char **buffer);
+
 void sendmessage(int sockfd, char *message)
 {
-  long int messagelength=strlen(message);
   char messagelengthchar[21];
-  sprintf(messagelengthchar,"%ld",messagelength);
+  long int messagelength=strlen(message);
 
   //sending the length of the message
-  printf("Sending length: %ld\n",messagelength);
+  sprintf(messagelengthchar,"%ld",messagelength);
+  printf("Sending length: %s\n",messagelengthchar);
   if(write(sockfd,messagelengthchar,strlen(messagelengthchar))<0){
     error("ERROR writing messagelength to socket\n");
   }
@@ -50,18 +52,21 @@ void getmessage(int newsockfd, char **buffer)
 {
   char buffersizechar[21];	//The server reads characters from the socket connection into this buffer
   memset(buffersizechar,0,21);//innitialize the buffer to zeroes
+  int buffersize;
 
   //read size of message
   if(read(newsockfd,&buffersizechar,21)<0){
     error("ERROR reading from socket");
   }
-  int buffersize=atoi(buffersizechar);
 
-  printf("Taille du message a recevoir:%d\n",buffersize);
+  buffersize=atoi(buffersizechar)+1;
+  printf("Taille du message a recevoir:%d\n",buffersize-1);
   *buffer=realloc(*buffer,sizeof(char)*buffersize);
   if(*buffer==NULL){
     error("ERROR realloc");
   }
+
+  system(sleepread);
 
   memset(*buffer,0,buffersize);
   //read message
@@ -72,9 +77,15 @@ void getmessage(int newsockfd, char **buffer)
   system(sleepread);
 }
 
+
+////////////////////////////////////////
+//          CODE SERVER
+///////////////////////////////////////
+
+
 int *connectionserver(joueur *tabjoueurs, int nbjoueurs)
 {
-  printf("CONNECTION SERVER\n");
+  printf("CONNEXION SERVER\n");
 
   char *messageconnection=calloc(10,sizeof(char));
   int *tabsock=calloc((nbjoueurs+1),sizeof(int));
@@ -136,6 +147,7 @@ int *connectionserver(joueur *tabjoueurs, int nbjoueurs)
     }
     printf("Connexion etablie avec %s\n",inet_ntop(AF_INET,&cli_addr.sin_addr,adresse,INET_ADDRSTRLEN));
   }
+
   tabsock[nbjoueurs]=sockfd;
   free(messageconnection);
   free(adresse);
@@ -143,9 +155,15 @@ int *connectionserver(joueur *tabjoueurs, int nbjoueurs)
   return(tabsock);
 }
 
+
+////////////////////////////////////////
+//          CODE CLIENT
+///////////////////////////////////////
+
+
 int connectionclient()
 {
-  printf("CONNECTION CLIENT\n");
+  printf("CONNEXION CLIENT\n");
   struct sockaddr_in serv_addr;//server adress
   struct hostent *server=NULL;
   char *hostname=calloc(30,sizeof(char));
@@ -185,7 +203,7 @@ int connectionclient()
   }
   //connection established as client
 
-  char *messageconnection=calloc(1,sizeof(char));
+  char *messageconnection=calloc(10,sizeof(char));
 
   printf("Humain:0 Ordi:1\n");
   int ordi=-1;
@@ -195,12 +213,11 @@ int connectionclient()
   sprintf(messageconnection,"%d",ordi);
   sendmessage(sockfd,messageconnection);
 
-  printf("Connection au server reussie\n");
+  printf("Connexion au server reussie\n");
 
   free(messageconnection);
   free(hostname);
-  system(clear);
-  printf("FIN CONNECTION CLIENT\n");
+  printf("FIN CONNEXION CLIENT\n");
 
   return(sockfd);
 }
