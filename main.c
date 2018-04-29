@@ -1,23 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "macros.h"
 
-  char heberge='a',jouer='a',modejeu='a';
+  char heberge='a',jouer='a',modejeu[1];
 
 int main()
 {
   system(clear);
-  while(modejeu!='l' && modejeu!='r'){
+  do{
     printf("Voulez-vous jouer en local ou en reseau ? [l/r]\n");
-    scanf("%c",&modejeu);
-  }
+    scanf("%s",modejeu);
+  }while(strcmp(modejeu,"l")!=0 && strcmp(modejeu,"r")!=0);
 
 ///////////////////////////////////////
 
-  if(modejeu=='l'){
+  if(strcmp(modejeu,"l")==0){
 
   //PARTIE EN LOCAL
 
@@ -25,7 +26,7 @@ int main()
 
 /////////////////////////////////////
 
-  }else if(modejeu=='r'){
+}else if(strcmp(modejeu,"r")==0){
 
   //PARTIE EN RESEAU
 
@@ -53,6 +54,7 @@ int main()
     //si le joueur veut jouer on lance un client
     if(jouer=='y' && !fork()){
       system("gnome-terminal --command=\"./client\"");
+      exit(0);
     }
 
     if(heberge=='y'){

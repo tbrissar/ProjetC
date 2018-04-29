@@ -55,7 +55,7 @@ void getmessage(int newsockfd, char **buffer)
   char buffersizechar[21];	//The server reads characters from the socket connection into this buffer
   memset(buffersizechar,0,21);//innitialize the buffer to zeroes
   int buffersize;
-
+  
   //read size of message
   if(read(newsockfd,&buffersizechar,21)<0){
     error("ERROR reading from socket");
@@ -134,10 +134,13 @@ int *connectionserver(joueur *tabjoueurs, int nbjoueurs, char *modejeu)
   for(int i=0;i<nbjoueurs && res>0 ;i++){
 
     //si en local, le serveur cree lui-meme les clients
-    res=fork();
-    if(strcmp(modejeu,"local")==0 && res>0){
-      printf("J'ouvre une fenêtre i:%d\n",i);
-      system("gnome-terminal --command=\"./client localhost\"");
+    if(strcmp(modejeu,"local")==0){
+      res=fork();
+      if(res==0){
+        system(sleepslow);
+        system("gnome-terminal --command=\"./client localhost\"");
+        exit(0);
+      }
     }
 
     listen(sockfd,5);//listen on the socket for connections, second arg must be set to 5
@@ -230,6 +233,5 @@ int connectionclient(char *adress)
   free(messageconnection);
   free(hostname);
   //printf("FIN CONNEXION CLIENT\n");
-
   return(sockfd);
 }

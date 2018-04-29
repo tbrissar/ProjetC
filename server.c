@@ -48,9 +48,9 @@ int main(int argc, char *argv[])
   jeu(N,nbjoueurs,tabjoueurs,rose,plateau);
 
   //fermeture des sockets cote serveur
-  //attente de l'arret des fils si on est en local
   for(int i=0;i<nbjoueurs+1;i++){
     close(tabsock[i]);
+    //attente de l'arret des fils si l'on est en local
     if(strcmp(argv[1],"local")==0){
       wait(NULL);
     }

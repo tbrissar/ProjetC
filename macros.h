@@ -23,7 +23,7 @@
 
   #define clear "clear"
   #define sleepsend "sleep 0.1"
-  #define sleepread "sleep 0.005"
+  #define sleepread "sleep 0.05"
   #define sleepconnection "sleep 1"
   #define sleepslow "sleep 1"
 

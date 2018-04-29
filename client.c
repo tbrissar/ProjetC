@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 {
   sockfd=connectionclient(argv[1]);
   char *buffer=calloc(10,sizeof(char));
-  char puit;
+  char *checkfin=calloc(4,sizeof(char));
 
   while(fin==0){
     getmessage(sockfd,&buffer);
@@ -40,9 +40,10 @@ int main(int argc, char *argv[])
     }else if(strcmp(buffer,"fin")==0){
       //partie terminée
       fin=1;
-      printf("Partie terminée\nAppuyez sur une touche pour quitter");
-      scanf("%c",&puit);
-
+      printf("Partie terminée\nEcrivez fin pour quitter\n");
+      do{
+        scanf("%s",checkfin);
+      }while(strcmp(checkfin,"fin")!=0);
     }else{
       //affichage du message receptione
       printf("%s",buffer);
@@ -50,6 +51,7 @@ int main(int argc, char *argv[])
   }
   free(buffer);
 
+  sendmessage(sockfd,"termine");
   //fermeture du socket cote client
   close(sockfd);
 
