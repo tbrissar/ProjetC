@@ -154,7 +154,7 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
   do{
     printf("Combien de bombes ? (maximum %d)\n",nbmaxbombes);
     scanf("%d",&nbbombes);
-  }while(nbbombes>nbmaxbombes);
+  }while(nbbombes>nbmaxbombes || nbbombes<0);
   for(int i=1;i<=nbbombes;i++){
     do{
       randomX=rand()%*N;
