@@ -142,7 +142,7 @@ int *connectionserver(joueur *tabjoueurs, int nbjoueurs, char *modejeu)
       res=fork();
       if(res==0){
         system(sleepslow);
-        system("gnome-terminal --command=\"./client localhost\"");
+        system("xterm -e ./client localhost");
         exit(0);
       }
     }
