@@ -11,7 +11,7 @@ void init3x3(cellule **plateau, fleche *rose, int x, int y, int N)
   direction dir;
   for(int i=0;i<8;i++){
     dir=rose[i].dir;
-    if(checkbords(x,y,dir,N)){
+    if(isEdge(x,y,dir,N)){
       plateau[x+dir.hori][y+dir.verti].contenu=vide;
       plateau[x+dir.hori][y+dir.verti].age=0;
     }
@@ -33,7 +33,7 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
             //laser ultra puissant
             dir=rose[rand()%8].dir;
             int i=x,j=y;
-            while(checkbords(i,j,dir,N)){
+            while(isEdge(i,j,dir,N)){
               i+=dir.hori;
               j+=dir.verti;
               cell=plateau[i][j];

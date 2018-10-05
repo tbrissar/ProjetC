@@ -33,7 +33,7 @@
 
   char getSymbole(color coul, content cont);
   void affichage(cellule **plateau, int tour, int N, int nbjoueurs, joueur *tabjoueurs);
-  int checkbords(int i, int j, direction dir, int N);
+  int isEdge(int i, int j, direction dir, int N);
   int checkcapture(cellule **plateau, int x, int y, direction dir, color coul, int N);
   void capture(cellule **plateau, fleche *rose, int x, int y, color coul);
   int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueurs, joueur *tabjoueurs);

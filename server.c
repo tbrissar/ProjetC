@@ -8,29 +8,29 @@
 #include "multi.h"
 #include "macros.h"
 
-  void jeu(int N, int nbjoueurs, joueur *tabjoueurs, fleche *rose, cellule **plateau)
-  {
-    //printf("JEU\n");
-    int cpt=0,tour=0,res=0;
+void jeu(int N, int nbjoueurs, joueur *tabjoueurs, fleche *rose, cellule **plateau)
+{
+  //printf("JEU\n");
+  int cpt=0,tour=0,res=0;
 
-    while(cpt!=-1){
-      tour++;
-      affichage(plateau,tour,N,nbjoueurs,tabjoueurs);
-      res=pose(plateau,rose,tabjoueurs[cpt],tour,N,nbjoueurs,tabjoueurs);
-      cpt=(cpt+1)%nbjoueurs;
-      if(res==0){
-        cpt=checkfin(plateau,rose,tabjoueurs,cpt,N,nbjoueurs);
-      }
+  while(cpt!=-1){
+    tour++;
+    affichage(plateau,tour,N,nbjoueurs,tabjoueurs);
+    res=pose(plateau,rose,tabjoueurs[cpt],tour,N,nbjoueurs,tabjoueurs);
+    cpt=(cpt+1)%nbjoueurs;
+    if(res==0){
+      cpt=checkfin(plateau,rose,tabjoueurs,cpt,N,nbjoueurs);
     }
-    scores(plateau,tabjoueurs,N,nbjoueurs);
   }
+  scores(plateau,tabjoueurs,N,nbjoueurs);
+}
 
-  cellule **plateau=NULL;
-  fleche *rose=NULL;
-  int N=0,nbjoueurs=-1;
-  joueur *tabjoueurs=NULL;
+cellule **plateau=NULL;
+fleche *rose=NULL;
+int N=0,nbjoueurs=-1;
+joueur *tabjoueurs=NULL;
 
-  int *tabsock;
+int *tabsock;
 
 int main(int argc, char *argv[])
 {

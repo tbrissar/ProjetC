@@ -88,7 +88,7 @@ int ras(cellule **plateau, int x, int y, fleche *rose, int N)
   direction dir;
   for(int i=0;i<8;i++){
     dir=rose[i].dir;
-    if(checkbords(x,y,dir,N)){
+    if(isEdge(x,y,dir,N)){
       if(plateau[x+dir.hori][y+dir.verti].contenu==pion){
       return(0);
       }

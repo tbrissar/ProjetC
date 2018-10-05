@@ -41,37 +41,25 @@ char getSymbole(color coul, content cont)
 void affichage(cellule **plateau, int tour, int N, int nbjoueurs, joueur *tabjoueurs)
 {
   //printf("AFFICHAGE\n");
-  char affiche[650];
-  char buffer[30];
-  memset(affiche,0,650);
-  memset(buffer,0,30);
+  char affiche[650]={0};
 
-  sprintf(buffer,"\nTour : %d\n\n    ",tour);
-  strcat(affiche,buffer);
-  memset(buffer,0,30);
+  sprintf(affiche,"\nTour : %d\n\n    ",tour);
+
   for(int k=0;k<N;k++){
     if(k<10){
-    sprintf(buffer," %d ",k);
-    strcat(affiche,buffer);
-    memset(buffer,0,30);
-  }else{
-    sprintf(buffer,"%d ",k);
-    strcat(affiche,buffer);
-    memset(buffer,0,30);
-  }
+    sprintf(affiche,"%s %d ",affiche,k);
+    }else{
+    sprintf(affiche,"%s%d ",affiche,k);
+    }
   }
   strcat(affiche," y\n");
   for(int i=0;i<N;i++){
-    sprintf(buffer," %d ",i);
-    strcat(affiche,buffer);
-    memset(buffer,0,30);
+    sprintf(affiche,"%s %d ",affiche,i);
     if(i<10){
       strcat(affiche," ");
     }
     for(int j=0;j<N;j++){
-      sprintf(buffer,"[%c]",getSymbole(plateau[i][j].couleur,plateau[i][j].contenu));
-      strcat(affiche,buffer);
-      memset(buffer,0,30);
+      sprintf(affiche,"%s[%c]",affiche,getSymbole(plateau[i][j].couleur,plateau[i][j].contenu));
     }
     strcat(affiche,"\n");
   }
@@ -84,7 +72,7 @@ void affichage(cellule **plateau, int tour, int N, int nbjoueurs, joueur *tabjou
 
 //pour verifier si l'on va sur un bord
 //renvoie 0 si c'est le cas
-int checkbords(int i, int j, direction dir, int N)
+int isEdge(int i, int j, direction dir, int N)
 {
   if
   ((dir.hori==1 && dir.verti==1 && (i==N-1 || j==N-1)) //sudest
@@ -106,7 +94,7 @@ int checkcapture(cellule **plateau, int x, int y, direction dir, color coul, int
   int i=x,j=y;
   cellule suivante;
 
-  if(!checkbords(i,j,dir,N))
+  if(!isEdge(i,j,dir,N))
   {
     return(0);
   }else{
@@ -117,7 +105,7 @@ int checkcapture(cellule **plateau, int x, int y, direction dir, color coul, int
   }
   while(suivante.couleur!=coul){
     i+=dir.hori;j+=dir.verti;
-    if(!checkbords(i,j,dir,N))
+    if(!isEdge(i,j,dir,N))
     {
       return(0);
     }else{
@@ -231,7 +219,7 @@ coord verifcouprestant(cellule **plateau, fleche *rose, joueur j, int N)
         //  printf("J'ai trouve un ennemi en %d,%d\n",i,j);
         for(int k=0;k<8;k++){
           dir=rose[k].dir;
-          if(checkbords(i,j,dir,N)){
+          if(isEdge(i,j,dir,N)){
             cell=plateau[i+dir.hori][j+dir.verti];
             x=i+dir.hori;
             y=j+dir.verti;
