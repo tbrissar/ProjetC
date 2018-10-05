@@ -1,0 +1,4 @@
+/home/theo/github/ProjetC/main.c:1:0: warning: ISO C forbids an empty translation unit [-Wpedantic]
+/usr/lib/gcc/x86_64-linux-gnu/7/../../../x86_64-linux-gnu/Scrt1.o: In function `_start':
+(.text+0x20): undefined reference to `main'
+collect2: error: ld returned 1 exit status

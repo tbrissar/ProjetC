@@ -38,7 +38,7 @@ int main()
 
     //si le joueur héberge on lance un serveur
     if(strcmp(heberge,"y")==0 && !fork()){
-      system("xterm -e ./server serveur");
+      system("gnome-terminal --command=\"./server serveur\"");
     }
 
     //on demande ensuite s'il veut jouer
@@ -54,7 +54,7 @@ int main()
     //si le joueur veut jouer on lance un client
     if(strcmp(jouer,"y")==0 && !fork()){
       printf("je lance un client\n");
-      system("xterm -e ./client NULL");
+      system("gnome-terminal --command=\"./client NULL\"");
       exit(0);
     }
 
