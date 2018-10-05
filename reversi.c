@@ -37,7 +37,7 @@ char getSymbole(color coul, content cont)
   exit(ERREUR_GET_SYMBOLE);
 }
 
-//affichage d'une plateau sur la sortie standard
+//affichage du plateau sur la sortie standard
 void affichage(cellule **plateau, int tour, int N, int nbjoueurs, joueur *tabjoueurs)
 {
   //printf("AFFICHAGE\n");

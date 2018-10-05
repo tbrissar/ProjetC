@@ -29,7 +29,7 @@ int trahison(cellule **plateau, fleche *rose, int tour, int N, int nbjoueurs, jo
       for(j=0;j<N;j++){
         currentage=plateau[i][j].age;
         if(currentage>0){
-          if((((float)rand()/INT_MAX)*somme) <= ((float)currentage)){
+          if((rand()%(40*somme/100)) <= currentage){
             macoul=coul=plateau[i][j].couleur;
             while(macoul==coul || (int)macoul>nbjoueurs){
               macoul=couleuraleatoire();
@@ -44,7 +44,6 @@ int trahison(cellule **plateau, fleche *rose, int tour, int N, int nbjoueurs, jo
             broadcast(buffer,nbjoueurs,tabjoueurs);
             return(1);
           }
-          somme-=currentage;
         }
       }
     }

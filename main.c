@@ -6,7 +6,7 @@
 #include <sys/wait.h>
 #include "macros.h"
 
-  char heberge='a',jouer='a',modejeu[1];
+  char heberge[1],jouer[2],modejeu[1];
 
 int main()
 {
@@ -31,36 +31,37 @@ int main()
   //PARTIE EN RESEAU
 
     //on demande au joueur s'il souhaite héberger la partie
-    while(heberge!='y' && heberge!='n'){
+    while(strcmp(heberge,"y")!=0 && strcmp(heberge,"n")!=0){
       printf("Souhaitez vous héberger la partie ? [y/n]\n");
-      scanf("%c",&heberge);
+      scanf("%s",heberge);
     }
 
     //si le joueur héberge on lance un serveur
-    if(heberge=='y' && !fork()){
+    if(strcmp(heberge,"y")==0 && !fork()){
       system("gnome-terminal --command=\"./server serveur\"");
     }
 
     //on demande ensuite s'il veut jouer
-    if(heberge=='y'){
-      while(jouer!='y' && jouer!='n'){
+    if(strcmp(heberge,"n")==0){
+      while(strcmp(jouer,"y")!=0 && strcmp(jouer,"n")!=0){
         printf("Souhaitez vous jouer ? [y/n]\n");
-        scanf("%c",&jouer);
+        scanf("%s",jouer);
       }
     }else{
-      jouer='y';
+      jouer[1]='y';
     }
 
     //si le joueur veut jouer on lance un client
-    if(jouer=='y' && !fork()){
-      system("gnome-terminal --command=\"./client\"");
+    if(strcmp(jouer,"y")==0 && !fork()){
+      printf("je lance un client\n");
+      system("gnome-terminal --command=\"./client NULL\"");
       exit(0);
     }
 
-    if(heberge=='y'){
+    if(strcmp(heberge,"y")==0){
       wait(NULL);
     }
-    if(jouer=='y'){
+    if(strcmp(jouer,"y")==0){
       wait(NULL);
     }
   }

@@ -20,8 +20,10 @@ void error(const char *msg)
   exit(1);
 }
 
+//forward declaration of getmessage()
 void getmessage(int newsockfd, char **buffer);
 
+//envoie un message au socket sockfd
 void sendmessage(int sockfd, char *message)
 {
   char messagelengthchar[21];
@@ -43,6 +45,7 @@ void sendmessage(int sockfd, char *message)
   system(sleepsend);
 }
 
+//envoie un message à tous les joueurs
 void broadcast(char *message, int nbjoueurs, joueur *tabjoueurs)
 {
   for(int i=0;i<nbjoueurs;i++){
@@ -50,12 +53,13 @@ void broadcast(char *message, int nbjoueurs, joueur *tabjoueurs)
   }
 }
 
+//attends un message du socket newsockfd
 void getmessage(int newsockfd, char **buffer)
 {
   char buffersizechar[21];	//The server reads characters from the socket connection into this buffer
   memset(buffersizechar,0,21);//innitialize the buffer to zeroes
   int buffersize;
-  
+
   //read size of message
   if(read(newsockfd,&buffersizechar,21)<0){
     error("ERROR reading from socket");
