@@ -1,4 +1,3 @@
-
 #ifndef __REVERSI__
 #define __REVERSI__
 
@@ -10,6 +9,7 @@
     int joker;
     int nbcoups;
     int ordi;
+    int sockfd;
   }joueur;
   typedef struct{
     content contenu;
@@ -32,12 +32,12 @@
 
 
   char getSymbole(color coul, content cont);
-  void affichage(cellule **plateau, int tour, int N);
+  void affichage(cellule **plateau, int tour, int N, int nbjoueurs, joueur *tabjoueurs);
   int checkbords(int i, int j, direction dir, int N);
   int checkcapture(cellule **plateau, int x, int y, direction dir, color coul, int N);
   void capture(cellule **plateau, fleche *rose, int x, int y, color coul);
-  int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueurs);
-  coord verifcouprestant(cellule **plateau, fleche *rose, color coul, int N);
+  int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueurs, joueur *tabjoueurs);
+  coord verifcouprestant(cellule **plateau, fleche *rose, joueur j, int N);
   direction directioninverse(fleche *rose, direction dir);
   int checkfin(cellule **plateau, fleche *rose, joueur *tabjoueurs, int cpt, int N, int nbjoueurs);
   void scores(cellule **plateau, joueur *tabjoueurs, int N, int nbjoueurs);

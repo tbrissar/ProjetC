@@ -1,19 +1,14 @@
-
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
 #include "reversi.h"
 #include "initreversi.h"
-
-#define ERREUR_ALLOCATION_MEMOIRE 1
-#define ERREUR_INIT_PLATEAU 4
-
-#define nbjoker 5
+#include "macros.h"
 
 //donne automatiquement une couleur aux joueurs
-int affectationcouleur(int nbj, joueur *tabjoueurs)
+int affectationcouleur(int nbjoueurs, joueur *tabjoueurs)
 {
-  switch(nbj){
+  switch(nbjoueurs){
     case 1 : tabjoueurs[0].couleur=vert;return(0);
     case 2 : tabjoueurs[1].couleur=rouge;break;
     case 3 : tabjoueurs[2].couleur=bleu;break;
@@ -21,44 +16,24 @@ int affectationcouleur(int nbj, joueur *tabjoueurs)
     case 5 : tabjoueurs[4].couleur=violet;break;
     case 6 : tabjoueurs[5].couleur=jaune;break;
   }
-  return(affectationcouleur(nbj-1,tabjoueurs));
+  return(affectationcouleur(nbjoueurs-1,tabjoueurs));
 }
 
 //renvoie le tableau de joueurs
 joueur *initJoueurs(int *nbjoueurs)
 {
-  int nbj,nbjoueursh=-1,nbjoueurso=0,nb;
-
-  while(nbjoueursh>6 || nbjoueursh<0){
-    printf("Combien de joueurs humains ? (0-6)\n");
-    scanf("%d",&nbjoueursh);
+  while(*nbjoueurs>6 || *nbjoueurs<2){
+    printf("Combien de joueurs ? (2-6)\n");
+    scanf("%d",nbjoueurs);
   }
-  do{
-    nb=2-nbjoueursh;
-    if(nb<0){
-      nb=0;
-    }
-    printf("Combien de joueurs ordi ? (%d-%d)\n",nb,6-nbjoueursh);
-    scanf("%d",&nbjoueurso);
-    *nbjoueurs=nbjoueursh+nbjoueurso;
-  }while(*nbjoueurs>6 || *nbjoueurs<2);
-
-  nbj=*nbjoueurs;
 
   joueur *tabjoueurs=malloc(sizeof(joueur)**nbjoueurs);
   if(tabjoueurs==NULL){
     free(tabjoueurs);
     exit(ERREUR_ALLOCATION_MEMOIRE);
   }
-  affectationcouleur(nbj,tabjoueurs);
+  affectationcouleur(*nbjoueurs,tabjoueurs);
 
-  for(int i=0;i<nbjoueursh;i++){
-    tabjoueurs[i].ordi=0;
-    tabjoueurs[i].joker=nbjoker;
-  }
-  for(int j=nbjoueursh;j<*nbjoueurs;j++){
-    tabjoueurs[j].ordi=1;
-  }
   return(tabjoueurs);
 }
 
@@ -129,8 +104,6 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
   cellule **plateau,cell;
   srand(time(NULL));
 
-  system("clear");
-
   switch(nbjoueurs){
     case 2 : *N=6;nbmaxbombes=20;break;
     case 3 : *N=7;nbmaxbombes=26;break;
@@ -181,7 +154,7 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
   do{
     printf("Combien de bombes ? (maximum %d)\n",nbmaxbombes);
     scanf("%d",&nbbombes);
-  }while(nbbombes>nbmaxbombes);
+  }while(nbbombes>nbmaxbombes || nbbombes<0);
   for(int i=1;i<=nbbombes;i++){
     do{
       randomX=rand()%*N;
@@ -194,12 +167,23 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
 }
 
 //desallouage d'un plateau
-int terminate(cellule **plateau, fleche *rose, int N)
+int terminate(cellule **plateau, fleche *rose,int N, joueur *tabjoueurs, int *tabsock)
 {
   for(int i=N-1;i>=0;i--){
     free(plateau[i]);
   }
+  free(tabjoueurs);
   free(plateau);
   free(rose);
+  free(tabsock);
+
   return(0);
+}
+
+void init(int *nbjoueurs, joueur **tabjoueurs, fleche **rose, int *N, cellule ***plateau)
+{
+  //printf("INIT\n");
+  *rose = initrose();
+  *tabjoueurs=initJoueurs(nbjoueurs);
+  *plateau=initplateau(N,*nbjoueurs,*tabjoueurs,*rose);
 }
