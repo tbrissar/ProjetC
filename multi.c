@@ -20,73 +20,71 @@ void error(const char *msg)
   exit(1);
 }
 
+////////////////////////////////////////
+//            COMMUNICATION           //
+////////////////////////////////////////
+
 //forward declaration of getmessage()
 void getmessage(int newsockfd, char **buffer);
 
-//envoie un message au socket sockfd
+//send a message to socket sockfd
 void sendmessage(int sockfd, char *message)
 {
-  char messagelengthchar[21];
-  long int messagelength=strlen(message);
+  //+1 to take \0 into account
+  unsigned int messageLength=strlen(message)+1;
 
   //sending the length of the message
-  sprintf(messagelengthchar,"%ld",messagelength);
-  //printf("Sending length: %s\n",messagelengthchar);
-  if(write(sockfd,messagelengthchar,strlen(messagelengthchar))<0){
-    error("ERROR writing messagelength to socket\n");
+  if(write(sockfd,&messageLength,sizeof(unsigned int))<0){
+    error("ERROR writing messageLength to socket\n");
   }
+
   system(sleepsend);
 
+  printf("message:|%s|length:%d\n",message,messageLength);
   //sending the message
-  //printf("Sending: %s\n",message);
-  if(write(sockfd,message,messagelength)<0){
+  if(write(sockfd,message,messageLength)<0){
     error("ERROR writing message to socket\n");
   }
   system(sleepsend);
 }
 
-//envoie un message à tous les joueurs
-void broadcast(char *message, int nbjoueurs, joueur *tabjoueurs)
-{
-  for(int i=0;i<nbjoueurs;i++){
-    sendmessage(tabjoueurs[i].sockfd,message);
-  }
-}
-
-//attends un message du socket newsockfd
+//wait for a message from socket newsockfd
 void getmessage(int newsockfd, char **buffer)
 {
-  char buffersizechar[21];	//The server reads characters from the socket connection into this buffer
-  memset(buffersizechar,0,21);//innitialize the buffer to zeroes
-  int buffersize;
+  unsigned int bufferLength;
 
-  //read size of message
-  if(read(newsockfd,&buffersizechar,21)<0){
+  //read size of the message
+  if(read(newsockfd,&bufferLength,sizeof(unsigned int))<0){
     error("ERROR reading from socket");
   }
 
-  buffersize=atoi(buffersizechar)+1;
-  //printf("Taille du message a recevoir:%d\n",buffersize-1);
-  *buffer=realloc(*buffer,sizeof(char)*buffersize);
+  *buffer=realloc(*buffer,sizeof(char)*(bufferLength));
   if(*buffer==NULL){
     error("ERROR realloc");
   }
 
   system(sleepread);
 
-  memset(*buffer,0,buffersize);
+  memset(*buffer,0,bufferLength);
   //read message
-  //printf("reading message\n");
-  if(read(newsockfd,*buffer,buffersize)<0){
+  if(read(newsockfd,*buffer,bufferLength)<0){
     error("ERROR reading from socket");
   }
   system(sleepread);
 }
 
+//send a message to all players
+void sendToAll(char *message, int nbjoueurs, joueur *tabjoueurs)
+{
+  for(int i=0;i<nbjoueurs;i++){
+    sendmessage(tabjoueurs[i].sockfd,message);
+  }
+}
+
 
 ////////////////////////////////////////
-//          CODE SERVER
-///////////////////////////////////////
+//               SERVER               //
+////////////////////////////////////////
 
 
 int *connectionserver(joueur *tabjoueurs, int nbjoueurs, char *modejeu)
@@ -174,8 +172,8 @@ int *connectionserver(joueur *tabjoueurs, int nbjoueurs, char *modejeu)
 
 
 ////////////////////////////////////////
-//          CODE CLIENT
-///////////////////////////////////////
+//               CLIENT               //
+////////////////////////////////////////
 
 
 int connectionclient(char *adress)

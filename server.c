@@ -41,8 +41,8 @@ int main(int argc, char *argv[])
   init(&nbjoueurs,&tabjoueurs,&rose,&N,&plateau);
   tabsock=connectionserver(tabjoueurs,nbjoueurs,argv[1]);
 
-  broadcast("clear",nbjoueurs,tabjoueurs);
-  broadcast("La partie commence\n",nbjoueurs,tabjoueurs);
+  sendToAll("clear",nbjoueurs,tabjoueurs);
+  sendToAll("La partie commence\n",nbjoueurs,tabjoueurs);
   system(sleepslow);
 
   jeu(N,nbjoueurs,tabjoueurs,rose,plateau);

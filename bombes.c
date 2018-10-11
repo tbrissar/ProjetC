@@ -27,7 +27,7 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
   srand(time(NULL));
 
 
-  broadcast("Bombe : ",nbjoueurs,tabjoueurs);
+  sendToAll("Bombe : ",nbjoueurs,tabjoueurs);
   switch(rand()%5){
     case 0 :
             //laser ultra puissant
@@ -45,7 +45,7 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
             plateau[x][y].contenu=pion;
             plateau[x][y].couleur=coul;
             plateau[x][y].age=1;
-            broadcast("Laser!\n",nbjoueurs,tabjoueurs);
+            sendToAll("Laser!\n",nbjoueurs,tabjoueurs);
             break;
     case 1 :
             //change la couleur du pion qui vient d'etre pose
@@ -55,7 +55,7 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
             plateau[x][y].couleur=macoul;
             plateau[x][y].contenu=pion;
             plateau[x][y].age=1;
-            broadcast("Changement de couleur!\n",nbjoueurs,tabjoueurs);
+            sendToAll("Changement de couleur!\n",nbjoueurs,tabjoueurs);
             break;
     case 2 :
             //seul reste le pion joue
@@ -63,21 +63,21 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
             plateau[x][y].couleur=coul;
             plateau[x][y].contenu=pion;
             plateau[x][y].age=1;
-            broadcast("Survivant!\n",nbjoueurs,tabjoueurs);
+            sendToAll("Survivant!\n",nbjoueurs,tabjoueurs);
             break;
     case 3 :
             //explosion normale + case inutilisable
             init3x3(plateau,rose,x,y,N);
             plateau[x][y].contenu=trou;
             plateau[x][y].age=0;
-            broadcast("Mayhem!\n",nbjoueurs,tabjoueurs);
+            sendToAll("Mayhem!\n",nbjoueurs,tabjoueurs);
             break;
     case 4 :
             //explosion normale
             init3x3(plateau,rose,x,y,N);
             plateau[x][y].contenu=vide;
             plateau[x][y].age=0;
-            broadcast("Classique!\n",nbjoueurs,tabjoueurs);
+            sendToAll("Classique!\n",nbjoueurs,tabjoueurs);
             break;
     default :
             error("explosion() : valeur aleatoire incorrecte");

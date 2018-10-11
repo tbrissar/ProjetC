@@ -65,7 +65,7 @@ void affichage(cellule **plateau, int tour, int N, int nbjoueurs, joueur *tabjou
   }
   strcat(affiche," x\n\n");
 
-  broadcast(affiche,nbjoueurs,tabjoueurs);
+  sendToAll(affiche,nbjoueurs,tabjoueurs);
   printf("%s",affiche);
   //printf("AFFICHAGE FIN\n");
 }
@@ -149,14 +149,14 @@ int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueu
   char *buffer=calloc(100,sizeof(char));
 
   sprintf(buffer,"C'est a %c de jouer\n",symbolejoueur);
-  broadcast(buffer,nbjoueurs,tabjoueurs);
+  sendToAll(buffer,nbjoueurs,tabjoueurs);
   memset(buffer,0,strlen(buffer));
 
   bestcoord=verifcouprestant(plateau,rose,j,N);
   if(bestcoord.coordx==-1){
-    broadcast("clear",nbjoueurs,tabjoueurs);
+    sendToAll("clear",nbjoueurs,tabjoueurs);
     sprintf(buffer,"%c ne peux pas jouer\n",symbolejoueur);
-    broadcast(buffer,nbjoueurs,tabjoueurs);
+    sendToAll(buffer,nbjoueurs,tabjoueurs);
     trahison(plateau,rose,tour,N,nbjoueurs,tabjoueurs);
     free(buffer);
     return(0);
@@ -190,7 +190,7 @@ int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueu
   }
 
   system(sleepslow);
-  broadcast("clear",nbjoueurs,tabjoueurs);
+  sendToAll("clear",nbjoueurs,tabjoueurs);
   if(plateau[x][y].contenu==bombe){
     explosion(plateau,coul,rose,x,y,N,nbjoueurs,tabjoueurs);
   }else{
@@ -295,10 +295,10 @@ void scores(cellule **plateau, joueur *tabjoueurs, int N, int nbjoueurs)
       }
     }
     sprintf(buffer,"Le joueur %c a un score de %d\n",getSymbole(coul,cont),score);
-    broadcast(buffer,nbjoueurs,tabjoueurs);
+    sendToAll(buffer,nbjoueurs,tabjoueurs);
     memset(buffer,0,50);
   }
-  broadcast("fin",nbjoueurs,tabjoueurs);
+  sendToAll("fin",nbjoueurs,tabjoueurs);
   free(buffer);
 }
 

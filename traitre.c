@@ -41,7 +41,7 @@ int trahison(cellule **plateau, fleche *rose, int tour, int N, int nbjoueurs, jo
             }
             capture(plateau,rose,i,j,macoul);
             sprintf(buffer,"%d,%d a trahi! Le fourbe!\n",i,j);
-            broadcast(buffer,nbjoueurs,tabjoueurs);
+            sendToAll(buffer,nbjoueurs,tabjoueurs);
             return(1);
           }
         }
