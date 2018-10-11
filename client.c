@@ -15,22 +15,20 @@ int main(int argc, char *argv[])
   char *checkfin=calloc(4,sizeof(char));
 
   while(fin==0){
-    getmessage(sockfd,&buffer);
+    getMessage(sockfd,&buffer);
 
     if(strcmp(buffer,"pose")==0){
       //saisie de case
-      getmessage(sockfd,&buffer);
+      getMessage(sockfd,&buffer);
       printf("%s",buffer);
       do{
         buffer=realloc(buffer,sizeof(int)*3);
         scanf("%d,%d",&x,&y);
-        memset(buffer,0,sizeof(int)*3);
         sprintf(buffer,"%d",x);
-        sendmessage(sockfd,buffer);
-        memset(buffer,0,sizeof(int)*3);
+        sendMessage(sockfd,buffer);
         sprintf(buffer,"%d",y);
-        sendmessage(sockfd,buffer);
-        getmessage(sockfd,&buffer);
+        sendMessage(sockfd,buffer);
+        getMessage(sockfd,&buffer);
       }while(strcmp(buffer,"poseok")!=0);
 
     }else if(strcmp(buffer,"clear")==0){
@@ -51,7 +49,7 @@ int main(int argc, char *argv[])
   }
   free(buffer);
 
-  sendmessage(sockfd,"termine");
+  sendMessage(sockfd,"termine");
   //fermeture du socket cote client
   close(sockfd);
 

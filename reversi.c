@@ -70,9 +70,8 @@ void affichage(cellule **plateau, int tour, int N, int nbjoueurs, joueur *tabjou
   //printf("AFFICHAGE FIN\n");
 }
 
-//pour verifier si l'on va sur un bord
-//renvoie 0 si c'est le cas
-int isEdge(int i, int j, direction dir, int N)
+//renvoie si la case dans la direction passée est hors plateau
+bool isEdge(int i, int j, direction dir, int N)
 {
   if
   ((dir.hori==1 && dir.verti==1 && (i==N-1 || j==N-1)) //sudest
@@ -82,35 +81,35 @@ int isEdge(int i, int j, direction dir, int N)
   ||(dir.hori==1 && dir.verti==0 && i==N-1)             //est
   ||(dir.hori==-1 && dir.verti==0 && i==0)               //ouest
   ||(dir.hori==0 && dir.verti==1 && j==N-1)             //sud
-  ||(dir.hori==0 && dir.verti==-1 && j==0)){             //nord
-    return(0);
+  ||(dir.hori==0 && dir.verti==-1 && j==0)){          //nord
+  return(true);
   }
-  return(1);
+  return(false);
 }
 
 //renvoie le nombre de pion captures avec une pose dans une direction donnee
 int checkcapture(cellule **plateau, int x, int y, direction dir, color coul, int N)
 {
   int i=x,j=y;
-  cellule suivante;
+  cellule nextCell;
 
-  if(!isEdge(i,j,dir,N))
+  if(isEdge(i,j,dir,N))
   {
     return(0);
   }else{
-    suivante=(plateau[i+dir.hori][j+dir.verti]);
-    if(suivante.contenu!=pion || suivante.couleur==coul){
+    nextCell=(plateau[i+dir.hori][j+dir.verti]);
+    if(nextCell.contenu!=pion || nextCell.couleur==coul){
       return(0);
     }
   }
-  while(suivante.couleur!=coul){
+  while(nextCell.couleur!=coul){
     i+=dir.hori;j+=dir.verti;
-    if(!isEdge(i,j,dir,N))
+    if(isEdge(i,j,dir,N))
     {
       return(0);
     }else{
-      suivante=(plateau[i+dir.hori][j+dir.verti]);
-      if(suivante.contenu!=pion){
+      nextCell=(plateau[i+dir.hori][j+dir.verti]);
+      if(nextCell.contenu!=pion){
         return(0);
       }
     }
@@ -150,7 +149,6 @@ int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueu
 
   sprintf(buffer,"C'est a %c de jouer\n",symbolejoueur);
   sendToAll(buffer,nbjoueurs,tabjoueurs);
-  memset(buffer,0,strlen(buffer));
 
   bestcoord=verifcouprestant(plateau,rose,j,N);
   if(bestcoord.coordx==-1){
@@ -170,26 +168,26 @@ int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueu
       s+=rose[i].nbcases;
     }
   }else{
-    sendmessage(j.sockfd,"pose");
+    sendMessage(j.sockfd,"pose");
     sprintf(buffer,"Entrez la case ou vous souhaitez jouer %c (au format x,y)\n",symbolejoueur);
-    sendmessage(j.sockfd,buffer);
+    sendMessage(j.sockfd,buffer);
     while(s==0){
-      getmessage(j.sockfd,&buffer);
+      getMessage(j.sockfd,&buffer);
       x=atoi(buffer);
-      getmessage(j.sockfd,&buffer);
+      getMessage(j.sockfd,&buffer);
       y=atoi(buffer);
       for(int i=0;i<8;i++){
         rose[i].nbcases=checkcapture(plateau,x,y,rose[i].dir,coul,N);
         s+=rose[i].nbcases;
       }
       if(s==0){
-        sendmessage(j.sockfd,"posepasok");
+        sendMessage(j.sockfd,"posepasok");
       }
     }
-    sendmessage(j.sockfd,"poseok");
+    sendMessage(j.sockfd,"poseok");
   }
 
-  system(sleepslow);
+  //system(sleepslow);
   sendToAll("clear",nbjoueurs,tabjoueurs);
   if(plateau[x][y].contenu==bombe){
     explosion(plateau,coul,rose,x,y,N,nbjoueurs,tabjoueurs);
@@ -219,7 +217,7 @@ coord verifcouprestant(cellule **plateau, fleche *rose, joueur j, int N)
         //  printf("J'ai trouve un ennemi en %d,%d\n",i,j);
         for(int k=0;k<8;k++){
           dir=rose[k].dir;
-          if(isEdge(i,j,dir,N)){
+          if(!isEdge(i,j,dir,N)){
             cell=plateau[i+dir.hori][j+dir.verti];
             x=i+dir.hori;
             y=j+dir.verti;
@@ -241,9 +239,8 @@ coord verifcouprestant(cellule **plateau, fleche *rose, joueur j, int N)
   }
   if(bestmove>0){
     char *buffer=calloc(50,sizeof(char));
-    memset(buffer,0,strlen(buffer));
-    sprintf(buffer,"Le meilleur coup immediat est en %d,%d\n",bestx,besty);
-    sendmessage(j.sockfd,buffer);
+    sprintf(buffer,"Le meilleur coup immediat est en (%d,%d)\n",bestx,besty);
+    sendMessage(j.sockfd,buffer);
     coordcoup.coordx=bestx;
     coordcoup.coordy=besty;
     free(buffer);
@@ -296,7 +293,6 @@ void scores(cellule **plateau, joueur *tabjoueurs, int N, int nbjoueurs)
     }
     sprintf(buffer,"Le joueur %c a un score de %d\n",getSymbole(coul,cont),score);
     sendToAll(buffer,nbjoueurs,tabjoueurs);
-    memset(buffer,0,50);
   }
   sendToAll("fin",nbjoueurs,tabjoueurs);
   free(buffer);

@@ -24,6 +24,7 @@ joueur *initJoueurs(int *nbjoueurs)
 {
   while(*nbjoueurs>6 || *nbjoueurs<2){
     printf("Combien de joueurs ? (2-6)\n");
+    //looping if characters are entered
     scanf("%d",nbjoueurs);
   }
 
@@ -88,12 +89,13 @@ int ras(cellule **plateau, int x, int y, fleche *rose, int N)
   direction dir;
   for(int i=0;i<8;i++){
     dir=rose[i].dir;
-    if(isEdge(x,y,dir,N)){
+    if(!isEdge(x,y,dir,N)){
       if(plateau[x+dir.hori][y+dir.verti].contenu==pion){
       return(0);
       }
     }
   }
+
   return(1);
 }
 
@@ -157,12 +159,16 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
   }while(nbbombes>nbmaxbombes || nbbombes<0);
   for(int i=1;i<=nbbombes;i++){
     do{
+
+
       randomX=rand()%*N;
       randomY=rand()%*N;
+
       cell=plateau[randomX][randomY];
     }while(cell.contenu==pion || cell.contenu==bombe || !ras(plateau,randomX,randomY,rose,*N));
     plateau[randomX][randomY].contenu=bombe;
   }
+
   return(plateau);
 }
 

@@ -24,11 +24,11 @@ void error(const char *msg)
 //            COMMUNICATION           //
 ////////////////////////////////////////
 
-//forward declaration of getmessage()
-void getmessage(int newsockfd, char **buffer);
+//forward declaration of getMessage()
+//void getMessage(int newsockfd, char **buffer);
 
 //send a message to socket sockfd
-void sendmessage(int sockfd, char *message)
+void sendMessage(int sockfd, char *message)
 {
   //+1 to take \0 into account
   unsigned int messageLength=strlen(message)+1;
@@ -38,18 +38,25 @@ void sendmessage(int sockfd, char *message)
     error("ERROR writing messageLength to socket\n");
   }
 
-  system(sleepsend);
+  //system(sleepsend);
 
-  printf("message:|%s|length:%d\n",message,messageLength);
   //sending the message
   if(write(sockfd,message,messageLength)<0){
     error("ERROR writing message to socket\n");
   }
-  system(sleepsend);
+  //system(sleepsend);
+}
+
+//send a message to all players
+void sendToAll(char *message, int nbjoueurs, joueur *tabjoueurs)
+{
+  for(int i=0;i<nbjoueurs;i++){
+    sendMessage(tabjoueurs[i].sockfd,message);
+  }
 }
 
 //wait for a message from socket newsockfd
-void getmessage(int newsockfd, char **buffer)
+void getMessage(int newsockfd, char **buffer)
 {
   unsigned int bufferLength;
 
@@ -63,22 +70,13 @@ void getmessage(int newsockfd, char **buffer)
     error("ERROR realloc");
   }
 
-  system(sleepread);
+  //system(sleepread);
 
-  memset(*buffer,0,bufferLength);
   //read message
   if(read(newsockfd,*buffer,bufferLength)<0){
     error("ERROR reading from socket");
   }
-  system(sleepread);
-}
-
-//send a message to all players
-void sendToAll(char *message, int nbjoueurs, joueur *tabjoueurs)
-{
-  for(int i=0;i<nbjoueurs;i++){
-    sendmessage(tabjoueurs[i].sockfd,message);
-  }
+  //system(sleepread);
 }
 
 
@@ -154,7 +152,7 @@ int *connectionserver(joueur *tabjoueurs, int nbjoueurs, char *modejeu)
     }
     //connection established as server
 
-    getmessage(currentsockfd,&messageconnection);
+    getMessage(currentsockfd,&messageconnection);
     ordi=atoi(messageconnection);
     tabjoueurs[i].ordi=ordi;
     if(ordi==0){
@@ -228,7 +226,7 @@ int connectionclient(char *adress)
     scanf("%d",&ordi);
   }
   sprintf(messageconnection,"%d",ordi);
-  sendmessage(sockfd,messageconnection);
+  sendMessage(sockfd,messageconnection);
 
   printf("Connexion au server reussie\n");
 

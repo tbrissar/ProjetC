@@ -5,8 +5,8 @@
 
   int connectionclient(char *adress);
   int *connectionserver(joueur *tabjoueurs, int nbjoueurs, char *modejeu);
-  void getmessage(int newsockfd, char **buffer);
-  void sendmessage(int newsockfd, char *message);
+  void getMessage(int newsockfd, char **buffer);
+  void sendMessage(int newsockfd, char *message);
   void error(const char *msg);
   void sendToAll(char *message, int nbjoueurs, joueur *tabjoueurs);
 
