@@ -16,7 +16,6 @@ int main(int argc, char *argv[])
 
   while(fin==0){
     getMessage(sockfd,&buffer);
-    printf("Inbuffer:%s\n",buffer);
     int instruction=(int)strtol(buffer,NULL,10);
 
     switch(instruction){
@@ -38,8 +37,7 @@ int main(int argc, char *argv[])
 
     case 4:
       //display clearing
-      //system(clear);
-      printf("\n\n\n");
+      system(clear);
       break;
 
     case 5:
