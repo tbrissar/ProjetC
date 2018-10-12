@@ -5,10 +5,9 @@
 
   typedef enum{vert=1,rouge,bleu,orange,violet,jaune}color;
   typedef enum{vide=0,pion,bombe,trou}content;
-  //un joueur a une couleur, un nombre de coups possibles ainsi que des joker
+  //un joueur a une couleur, un nombre de coups possibles
   typedef struct{
     color couleur;
-    int joker;
     int nbcoups;
     int ordi;
     int sockfd;
@@ -33,8 +32,8 @@
   }coord;
 
 
-  char getSymbole(color coul, content cont);
-  void affichage(cellule **plateau, int tour, int N, int nbjoueurs, joueur *tabjoueurs);
+  char getSymbol(color coul, content cont);
+  void display(cellule **plateau, int tour, int N, int nbjoueurs, joueur *tabjoueurs);
   bool isEdge(int i, int j, direction dir, int N);
   int checkcapture(cellule **plateau, int x, int y, direction dir, color coul, int N);
   void capture(cellule **plateau, fleche *rose, int x, int y, color coul);
@@ -43,6 +42,6 @@
   direction directioninverse(fleche *rose, direction dir);
   int checkfin(cellule **plateau, fleche *rose, joueur *tabjoueurs, int cpt, int N, int nbjoueurs);
   void scores(cellule **plateau, joueur *tabjoueurs, int N, int nbjoueurs);
-  color couleuraleatoire();
+  color randomColor();
 
 #endif

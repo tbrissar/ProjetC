@@ -50,7 +50,7 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
     case 1 :
             //change la couleur du pion qui vient d'etre pose
             while(macoul==coul){
-              macoul=couleuraleatoire();
+              macoul=randomColor();
             }
             plateau[x][y].couleur=macoul;
             plateau[x][y].contenu=pion;
