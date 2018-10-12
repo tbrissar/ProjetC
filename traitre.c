@@ -32,7 +32,7 @@ int trahison(cellule **plateau, fleche *rose, int tour, int N, int nbjoueurs, jo
           if((rand()%(40*somme/100)) <= currentage){
             macoul=coul=plateau[i][j].couleur;
             while(macoul==coul || (int)macoul>nbjoueurs){
-              macoul=couleuraleatoire();
+              macoul=randomColor();
             }
             plateau[i][j].couleur=macoul;
             plateau[i][j].age=1;
@@ -40,6 +40,7 @@ int trahison(cellule **plateau, fleche *rose, int tour, int N, int nbjoueurs, jo
               rose[k].nbcases=checkcapture(plateau,i,j,rose[k].dir,macoul,N);
             }
             capture(plateau,rose,i,j,macoul);
+            sendToAll(instrtext,nbjoueurs,tabjoueurs);
             sprintf(buffer,"%d,%d a trahi! Le fourbe!\n",i,j);
             sendToAll(buffer,nbjoueurs,tabjoueurs);
             return(1);

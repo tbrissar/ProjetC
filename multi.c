@@ -155,9 +155,6 @@ int *connectionserver(joueur *tabjoueurs, int nbjoueurs, char *modejeu)
     getMessage(currentsockfd,&messageconnection);
     ordi=atoi(messageconnection);
     tabjoueurs[i].ordi=ordi;
-    if(ordi==0){
-      tabjoueurs[i].joker=5;
-    }
     printf("Connexion etablie avec %s\n",inet_ntop(AF_INET,&cli_addr.sin_addr,adresse,INET_ADDRSTRLEN));
   }
 

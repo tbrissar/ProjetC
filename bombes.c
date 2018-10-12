@@ -4,6 +4,7 @@
 #include "reversi.h"
 #include "bombes.h"
 #include "multi.h"
+#include "macros.h"
 
 //vide les cases situées autour de la cellule passée en paramètre
 void init3x3(cellule **plateau, fleche *rose, int x, int y, int N)
@@ -26,7 +27,7 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
   color macoul=coul;
   srand(time(NULL));
 
-
+  sendToAll(instrtext,nbjoueurs,tabjoueurs);
   sendToAll("Bombe : ",nbjoueurs,tabjoueurs);
   switch(rand()%5){
     case 0 :
@@ -45,16 +46,18 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
             plateau[x][y].contenu=pion;
             plateau[x][y].couleur=coul;
             plateau[x][y].age=1;
+            sendToAll(instrtext,nbjoueurs,tabjoueurs);
             sendToAll("Laser!\n",nbjoueurs,tabjoueurs);
             break;
     case 1 :
             //change la couleur du pion qui vient d'etre pose
             while(macoul==coul){
-              macoul=couleuraleatoire();
+              macoul=randomColor();
             }
             plateau[x][y].couleur=macoul;
             plateau[x][y].contenu=pion;
             plateau[x][y].age=1;
+            sendToAll(instrtext,nbjoueurs,tabjoueurs);
             sendToAll("Changement de couleur!\n",nbjoueurs,tabjoueurs);
             break;
     case 2 :
@@ -63,6 +66,7 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
             plateau[x][y].couleur=coul;
             plateau[x][y].contenu=pion;
             plateau[x][y].age=1;
+            sendToAll(instrtext,nbjoueurs,tabjoueurs);
             sendToAll("Survivant!\n",nbjoueurs,tabjoueurs);
             break;
     case 3 :
@@ -70,6 +74,7 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
             init3x3(plateau,rose,x,y,N);
             plateau[x][y].contenu=trou;
             plateau[x][y].age=0;
+            sendToAll(instrtext,nbjoueurs,tabjoueurs);
             sendToAll("Mayhem!\n",nbjoueurs,tabjoueurs);
             break;
     case 4 :
@@ -77,6 +82,7 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
             init3x3(plateau,rose,x,y,N);
             plateau[x][y].contenu=vide;
             plateau[x][y].age=0;
+            sendToAll(instrtext,nbjoueurs,tabjoueurs);
             sendToAll("Classique!\n",nbjoueurs,tabjoueurs);
             break;
     default :

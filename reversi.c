@@ -15,7 +15,7 @@
 #include "macros.h"
 
 //traduction du type case en caractere
-char getSymbole(color coul, content cont)
+char getSymbol(color coul, content cont)
 {
   switch(cont){
     case bombe : if(modeaffichage=='D'){return('o');}else{return(' ');}
@@ -37,10 +37,10 @@ char getSymbole(color coul, content cont)
   exit(ERREUR_GET_SYMBOLE);
 }
 
-//affichage du plateau sur la sortie standard
-void affichage(cellule **plateau, int tour, int N, int nbjoueurs, joueur *tabjoueurs)
+//display du plateau sur la sortie standard
+void display(cellule **plateau, int tour, int N, int nbjoueurs, joueur *tabjoueurs)
 {
-  //printf("AFFICHAGE\n");
+  //printf("display\n");
   char affiche[650]={0};
 
   sprintf(affiche,"\nTour : %d\n\n    ",tour);
@@ -59,15 +59,16 @@ void affichage(cellule **plateau, int tour, int N, int nbjoueurs, joueur *tabjou
       strcat(affiche," ");
     }
     for(int j=0;j<N;j++){
-      sprintf(affiche,"%s[%c]",affiche,getSymbole(plateau[i][j].couleur,plateau[i][j].contenu));
+      sprintf(affiche,"%s[%c]",affiche,getSymbol(plateau[i][j].couleur,plateau[i][j].contenu));
     }
     strcat(affiche,"\n");
   }
   strcat(affiche," x\n\n");
 
+  sendToAll(instrtext,nbjoueurs,tabjoueurs);
   sendToAll(affiche,nbjoueurs,tabjoueurs);
   printf("%s",affiche);
-  //printf("AFFICHAGE FIN\n");
+  //printf("display FIN\n");
 }
 
 //renvoie si la case dans la direction passée est hors plateau
@@ -144,15 +145,17 @@ int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueu
   content cont=pion;
   coord bestcoord;
   color coul=j.couleur;
-  char symbolejoueur=getSymbole(coul,cont);
+  char symbolejoueur=getSymbol(coul,cont);
   char *buffer=calloc(100,sizeof(char));
 
+  sendToAll(instrtext,nbjoueurs,tabjoueurs);
   sprintf(buffer,"C'est a %c de jouer\n",symbolejoueur);
   sendToAll(buffer,nbjoueurs,tabjoueurs);
 
   bestcoord=verifcouprestant(plateau,rose,j,N);
   if(bestcoord.coordx==-1){
-    sendToAll("clear",nbjoueurs,tabjoueurs);
+    sendToAll(instrclear,nbjoueurs,tabjoueurs);
+    sendToAll(instrtext,nbjoueurs,tabjoueurs);
     sprintf(buffer,"%c ne peux pas jouer\n",symbolejoueur);
     sendToAll(buffer,nbjoueurs,tabjoueurs);
     trahison(plateau,rose,tour,N,nbjoueurs,tabjoueurs);
@@ -168,7 +171,7 @@ int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueu
       s+=rose[i].nbcases;
     }
   }else{
-    sendMessage(j.sockfd,"pose");
+    sendMessage(j.sockfd,instrpose);
     sprintf(buffer,"Entrez la case ou vous souhaitez jouer %c (au format x,y)\n",symbolejoueur);
     sendMessage(j.sockfd,buffer);
     while(s==0){
@@ -181,14 +184,14 @@ int pose(cellule **plateau, fleche *rose, joueur j, int tour, int N, int nbjoueu
         s+=rose[i].nbcases;
       }
       if(s==0){
-        sendMessage(j.sockfd,"posepasok");
+        sendMessage(j.sockfd,instrposepasok);
       }
     }
-    sendMessage(j.sockfd,"poseok");
+    sendMessage(j.sockfd,instrposeok);
   }
 
   //system(sleepslow);
-  sendToAll("clear",nbjoueurs,tabjoueurs);
+  sendToAll(instrclear,nbjoueurs,tabjoueurs);
   if(plateau[x][y].contenu==bombe){
     explosion(plateau,coul,rose,x,y,N,nbjoueurs,tabjoueurs);
   }else{
@@ -239,6 +242,7 @@ coord verifcouprestant(cellule **plateau, fleche *rose, joueur j, int N)
   }
   if(bestmove>0){
     char *buffer=calloc(50,sizeof(char));
+    sendMessage(j.sockfd,instrtext);
     sprintf(buffer,"Le meilleur coup immediat est en (%d,%d)\n",bestx,besty);
     sendMessage(j.sockfd,buffer);
     coordcoup.coordx=bestx;
@@ -253,10 +257,8 @@ coord verifcouprestant(cellule **plateau, fleche *rose, joueur j, int N)
 direction directioninverse(fleche *rose, direction dir)
 {
   direction dirinverse;
-
   dirinverse.hori=-(dir.hori);
   dirinverse.verti=-(dir.verti);
-
   return(dirinverse);
 }
 
@@ -291,14 +293,15 @@ void scores(cellule **plateau, joueur *tabjoueurs, int N, int nbjoueurs)
           score++;
       }
     }
-    sprintf(buffer,"Le joueur %c a un score de %d\n",getSymbole(coul,cont),score);
+    sendToAll(instrtext,nbjoueurs,tabjoueurs);
+    sprintf(buffer,"Le joueur %c a un score de %d\n",getSymbol(coul,cont),score);
     sendToAll(buffer,nbjoueurs,tabjoueurs);
   }
-  sendToAll("fin",nbjoueurs,tabjoueurs);
+  sendToAll(instrfin,nbjoueurs,tabjoueurs);
   free(buffer);
 }
 
-color couleuraleatoire()
+color randomColor()
 {
   switch(rand()%6){
     case 0 : return(vert);

@@ -16,9 +16,12 @@ int main(int argc, char *argv[])
 
   while(fin==0){
     getMessage(sockfd,&buffer);
+    printf("Inbuffer:%s\n",buffer);
+    int instruction=(int)strtol(buffer,NULL,10);
 
-    if(strcmp(buffer,"pose")==0){
-      //saisie de case
+    switch(instruction){
+
+    case 1:
       getMessage(sockfd,&buffer);
       printf("%s",buffer);
       do{
@@ -29,26 +32,39 @@ int main(int argc, char *argv[])
         sprintf(buffer,"%d",y);
         sendMessage(sockfd,buffer);
         getMessage(sockfd,&buffer);
-      }while(strcmp(buffer,"poseok")!=0);
+        instruction=(int)strtol(buffer,NULL,10);
+      }while(instruction!=2);
+      break;
 
-    }else if(strcmp(buffer,"clear")==0){
-      //effacement du contenu de la console
-      system(clear);
+    case 4:
+      //display clearing
+      //system(clear);
+      printf("\n\n\n");
+      break;
 
-    }else if(strcmp(buffer,"fin")==0){
+    case 5:
       //partie terminée
       fin=1;
       printf("Partie terminée\nEcrivez fin pour quitter\n");
       do{
         scanf("%s",checkfin);
-      }while(strcmp(checkfin,"fin")!=0);
-    }else{
-      //affichage du message receptione
+      }while(instruction!=5);
+      break;
+
+    case 6:
+      //displaying plain text
+      getMessage(sockfd,&buffer);
       printf("%s",buffer);
+      break;
+
+    default:
+      printf("WRONG_INSTRUCTION\n");
+      break;
+
     }
   }
-  free(buffer);
 
+  free(buffer);
   sendMessage(sockfd,"termine");
   //fermeture du socket cote client
   close(sockfd);

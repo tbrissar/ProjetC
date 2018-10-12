@@ -15,7 +15,7 @@ void jeu(int N, int nbjoueurs, joueur *tabjoueurs, fleche *rose, cellule **plate
 
   while(cpt!=-1){
     tour++;
-    affichage(plateau,tour,N,nbjoueurs,tabjoueurs);
+    display(plateau,tour,N,nbjoueurs,tabjoueurs);
     res=pose(plateau,rose,tabjoueurs[cpt],tour,N,nbjoueurs,tabjoueurs);
     cpt=(cpt+1)%nbjoueurs;
     if(res==0){
@@ -41,7 +41,8 @@ int main(int argc, char *argv[])
   init(&nbjoueurs,&tabjoueurs,&rose,&N,&plateau);
   tabsock=connectionserver(tabjoueurs,nbjoueurs,argv[1]);
 
-  sendToAll("clear",nbjoueurs,tabjoueurs);
+  sendToAll(instrclear,nbjoueurs,tabjoueurs);
+  sendToAll(instrtext,nbjoueurs,tabjoueurs);
   sendToAll("La partie commence\n",nbjoueurs,tabjoueurs);
   system(sleepslow);
 
