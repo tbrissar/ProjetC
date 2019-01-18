@@ -248,7 +248,6 @@ coord verifcouprestant(cellule **plateau, fleche *rose, joueur j, int N)
     coordcoup.coordx=bestx;
     coordcoup.coordy=besty;
     free(buffer);
-    return(coordcoup);
   }
   return(coordcoup);
 }

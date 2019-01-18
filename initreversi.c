@@ -16,26 +16,23 @@ int affectationcouleur(int nbjoueurs, joueur *tabjoueurs)
     case 5 : tabjoueurs[4].couleur=violet;break;
     case 6 : tabjoueurs[5].couleur=jaune;break;
   }
-  return(affectationcouleur(nbjoueurs-1,tabjoueurs));
+  return(affectationcouleur(nbjoueurs-1, tabjoueurs));
 }
 
 //renvoie le tableau de joueurs
 joueur *initJoueurs(int *nbjoueurs)
 {
-  while(*nbjoueurs>6 || *nbjoueurs<2){
+  while(*nbjoueurs > 6 || *nbjoueurs < 2){
     printf("Combien de joueurs ? (2-6)\n");
     //looping if characters are entered
-    scanf("%d",nbjoueurs);
+    scanf("%d", nbjoueurs);
   }
 
-  joueur *tabjoueurs=malloc(sizeof(joueur)**nbjoueurs);
-  if(tabjoueurs==NULL){
-    free(tabjoueurs);
-    exit(ERREUR_ALLOCATION_MEMOIRE);
-  }
+  joueur *tabjoueurs = malloc(sizeof(joueur) * (long unsigned int)(*nbjoueurs));
+  myassert(tabjoueurs != NULL);
   affectationcouleur(*nbjoueurs,tabjoueurs);
 
-  return(tabjoueurs);
+  return tabjoueurs;
 }
 
 //initialisation du tableau de directions
@@ -45,14 +42,14 @@ fleche *initrose()
 
   //tableau de directions predefinies
   const direction
-  nord={0,-1},
-  sud={0,1},
-  est={1,0},
-  ouest={-1,0},
+  nord = {0,-1},
+  sud = {0,1},
+  est = {1,0},
+  ouest = {-1,0},
   nordest={1,-1},
-  nordouest={-1,-1},
-  sudest={1,1},
-  sudouest={-1,1};
+  nordouest = {-1,-1},
+  sudest = {1,1},
+  sudouest = {-1,1};
 
   rose=malloc(sizeof(fleche)*8);
   rose[0].dir=nord;
@@ -104,32 +101,32 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
 {
   int randomX,randomY,nbbombes,i,j,nbmaxbombes;
   cellule **plateau,cell;
-  srand(time(NULL));
+  srand((unsigned int)time(NULL));
 
   switch(nbjoueurs){
-    case 2 : *N=6;nbmaxbombes=20;break;
-    case 3 : *N=7;nbmaxbombes=26;break;
-    case 4 : *N=11;nbmaxbombes=57;break;
-    case 5 : *N=13;nbmaxbombes=83;break;
-    case 6 : *N=13;nbmaxbombes=69;break;
+    case 2 : *N = 6;nbmaxbombes = 20;break;
+    case 3 : *N = 7;nbmaxbombes = 26;break;
+    case 4 : *N = 11;nbmaxbombes = 57;break;
+    case 5 : *N = 13;nbmaxbombes = 83;break;
+    case 6 : *N = 13;nbmaxbombes = 69;break;
     default : exit(ERREUR_INIT_PLATEAU);
   }
 
-  plateau=malloc(*N*sizeof(*plateau));
-  if(plateau==NULL){
+  plateau = malloc((long unsigned int)*N * sizeof(*plateau));
+  if(plateau == NULL){
     exit(ERREUR_ALLOCATION_MEMOIRE);
   }
 
-  for(i=0;i<*N;i++){
-    plateau[i]=malloc(*N*sizeof(**plateau));
-    if(plateau[i]==NULL){
-      for(j=i-1;j>=0;j--){
+  for(i = 0;i < *N;i++){
+    plateau[i] = malloc((long unsigned int)*N *sizeof(**plateau));
+    if(plateau[i] == NULL){
+      for(j = i-1;j >= 0;j--){
         free(plateau[j]);
       }
       free(plateau);
       exit(ERREUR_ALLOCATION_MEMOIRE);
     }
-    for(j=0;j<*N;j++){
+    for(j = 0;j < *N;j++){
       plateau[i][j].contenu=vide;
       plateau[i][j].age=0;
     }
@@ -156,13 +153,13 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
   do{
     printf("Combien de bombes ? (maximum %d)\n",nbmaxbombes);
     scanf("%d",&nbbombes);
-  }while(nbbombes>nbmaxbombes || nbbombes<0);
-  for(int i=1;i<=nbbombes;i++){
+  }while(nbbombes > nbmaxbombes || nbbombes < 0);
+  for(int i = 1;i <= nbbombes;i++){
     do{
 
 
-      randomX=rand()%*N;
-      randomY=rand()%*N;
+      randomX = rand()%*N;
+      randomY = rand()%*N;
 
       cell=plateau[randomX][randomY];
     }while(cell.contenu==pion || cell.contenu==bombe || !ras(plateau,randomX,randomY,rose,*N));
