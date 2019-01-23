@@ -10,6 +10,7 @@
 void init3x3(cellule **plateau, fleche *rose, int x, int y, int N)
 {
   direction dir;
+
   for(int i = 0; i < 8; i++){
     dir = rose[i].dir;
     if(!isEdge(x, y, dir, N)){
@@ -29,6 +30,9 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
 
   sendToAll(instrtext,nbjoueurs,tabjoueurs);
   sendToAll("Bombe : ",nbjoueurs,tabjoueurs);
+
+  cellule *currentCell = &plateau[x][y];
+
   switch(rand()%5){
     case 0 :
             //laser ultra puissant
@@ -43,9 +47,9 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
                 plateau[i][j].age = 0;
               }
             }
-            plateau[x][y].contenu = pion;
-            plateau[x][y].couleur = coul;
-            plateau[x][y].age = 1;
+            currentCell->contenu = pion;
+            currentCell->couleur = coul;
+            currentCell->age = 1;
             sendToAll(instrtext,nbjoueurs,tabjoueurs);
             sendToAll("Laser!\n",nbjoueurs,tabjoueurs);
             break;
@@ -54,34 +58,34 @@ void explosion(cellule **plateau, color coul, fleche *rose, int x, int y, int N,
             while(macoul == coul){
               macoul = randomColor();
             }
-            plateau[x][y].couleur = macoul;
-            plateau[x][y].contenu = pion;
-            plateau[x][y].age = 1;
+            currentCell->couleur = macoul;
+            currentCell->contenu = pion;
+            currentCell->age = 1;
             sendToAll(instrtext,nbjoueurs,tabjoueurs);
             sendToAll("Changement de couleur!\n",nbjoueurs,tabjoueurs);
             break;
     case 2 :
             //seul reste le pion joue
             init3x3(plateau,rose,x,y,N);
-            plateau[x][y].couleur = coul;
-            plateau[x][y].contenu = pion;
-            plateau[x][y].age = 1;
+            currentCell->couleur = coul;
+            currentCell->contenu = pion;
+            currentCell->age = 1;
             sendToAll(instrtext,nbjoueurs,tabjoueurs);
             sendToAll("Survivant!\n",nbjoueurs,tabjoueurs);
             break;
     case 3 :
             //explosion normale + case inutilisable
             init3x3(plateau,rose,x,y,N);
-            plateau[x][y].contenu = trou;
-            plateau[x][y].age = 0;
+            currentCell->contenu = trou;
+            currentCell->age = 0;
             sendToAll(instrtext,nbjoueurs,tabjoueurs);
             sendToAll("Mayhem!\n",nbjoueurs,tabjoueurs);
             break;
     case 4 :
             //explosion normale
             init3x3(plateau,rose,x,y,N);
-            plateau[x][y].contenu = vide;
-            plateau[x][y].age = 0;
+            currentCell->contenu = vide;
+            currentCell->age = 0;
             sendToAll(instrtext,nbjoueurs,tabjoueurs);
             sendToAll("Classique!\n",nbjoueurs,tabjoueurs);
             break;

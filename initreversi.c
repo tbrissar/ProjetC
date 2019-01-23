@@ -4,17 +4,18 @@
 #include "reversi.h"
 #include "initreversi.h"
 #include "macros.h"
+#include "myassert.h"
 
 //donne automatiquement une couleur aux joueurs
 int affectationcouleur(int nbjoueurs, joueur *tabjoueurs)
 {
   switch(nbjoueurs){
-    case 1 : tabjoueurs[0].couleur=vert;return(0);
-    case 2 : tabjoueurs[1].couleur=rouge;break;
-    case 3 : tabjoueurs[2].couleur=bleu;break;
-    case 4 : tabjoueurs[3].couleur=orange;break;
-    case 5 : tabjoueurs[4].couleur=violet;break;
-    case 6 : tabjoueurs[5].couleur=jaune;break;
+    case 1 : tabjoueurs[0].couleur = vert;return(0);
+    case 2 : tabjoueurs[1].couleur = rouge;break;
+    case 3 : tabjoueurs[2].couleur = bleu;break;
+    case 4 : tabjoueurs[3].couleur = orange;break;
+    case 5 : tabjoueurs[4].couleur = violet;break;
+    case 6 : tabjoueurs[5].couleur = jaune;break;
   }
   return(affectationcouleur(nbjoueurs-1, tabjoueurs));
 }
@@ -30,7 +31,7 @@ joueur *initJoueurs(int *nbjoueurs)
 
   joueur *tabjoueurs = malloc(sizeof(joueur) * (long unsigned int)(*nbjoueurs));
   myassert(tabjoueurs != NULL);
-  affectationcouleur(*nbjoueurs,tabjoueurs);
+  affectationcouleur(*nbjoueurs, tabjoueurs);
 
   return tabjoueurs;
 }
@@ -46,12 +47,14 @@ fleche *initrose()
   sud = {0,1},
   est = {1,0},
   ouest = {-1,0},
-  nordest={1,-1},
+  nordest = {1,-1},
   nordouest = {-1,-1},
   sudest = {1,1},
   sudouest = {-1,1};
 
-  rose=malloc(sizeof(fleche)*8);
+  rose = malloc(sizeof(fleche) * 8);
+  myassert(rose != NULL);
+
   rose[0].dir=nord;
   rose[1].dir=sud;
   rose[2].dir=est;
@@ -60,6 +63,7 @@ fleche *initrose()
   rose[5].dir=sudouest;
   rose[6].dir=nordouest;
   rose[7].dir=sudest;
+
   return rose;
 }
 
@@ -84,23 +88,18 @@ void depart3(cellule **plateau, int x, int y, color a, color b, color c)
 int ras(cellule **plateau, int x, int y, fleche *rose, int N)
 {
   direction dir;
-  for(int i=0;i<8;i++){
-    dir=rose[i].dir;
-    if(!isEdge(x,y,dir,N)){
-      if(plateau[x+dir.hori][y+dir.verti].contenu==pion){
-      return(0);
-      }
-    }
+  for(int i = 0; i < 8; i++){
+    dir = rose[i].dir;
+    if(!isEdge(x, y, dir, N) && (plateau[x + dir.hori][y + dir.verti].contenu == pion)) return 0;
   }
-
-  return(1);
+  return 1;
 }
 
 //initialisation du age de jeu
 cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
 {
-  int randomX,randomY,nbbombes,i,j,nbmaxbombes;
-  cellule **plateau,cell;
+  int randomX, randomY, nbbombes, i, j, nbmaxbombes;
+  cellule **plateau, cell;
   srand((unsigned int)time(NULL));
 
   switch(nbjoueurs){
@@ -113,22 +112,14 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
   }
 
   plateau = malloc((long unsigned int)*N * sizeof(*plateau));
-  if(plateau == NULL){
-    exit(ERREUR_ALLOCATION_MEMOIRE);
-  }
+  myassert(plateau != NULL);
 
-  for(i = 0;i < *N;i++){
+  for(i = 0;i < *N; i++){
     plateau[i] = malloc((long unsigned int)*N *sizeof(**plateau));
-    if(plateau[i] == NULL){
-      for(j = i-1;j >= 0;j--){
-        free(plateau[j]);
-      }
-      free(plateau);
-      exit(ERREUR_ALLOCATION_MEMOIRE);
-    }
-    for(j = 0;j < *N;j++){
-      plateau[i][j].contenu=vide;
-      plateau[i][j].age=0;
+    myassert(plateau[i] != NULL);
+    for(j = 0; j < *N; j++){
+      plateau[i][j].contenu = vide;
+      plateau[i][j].age = 0;
     }
   }
 
@@ -154,25 +145,23 @@ cellule **initplateau(int *N, int nbjoueurs, joueur *tabjoueurs, fleche *rose)
     printf("Combien de bombes ? (maximum %d)\n",nbmaxbombes);
     scanf("%d",&nbbombes);
   }while(nbbombes > nbmaxbombes || nbbombes < 0);
-  for(int i = 1;i <= nbbombes;i++){
+
+  for(int i = 1; i <= nbbombes; i++){
     do{
-
-
-      randomX = rand()%*N;
-      randomY = rand()%*N;
-
-      cell=plateau[randomX][randomY];
-    }while(cell.contenu==pion || cell.contenu==bombe || !ras(plateau,randomX,randomY,rose,*N));
-    plateau[randomX][randomY].contenu=bombe;
+      randomX = rand() % *N;
+      randomY = rand() % *N;
+      cell = plateau[randomX][randomY];
+    }while(cell.contenu == pion || cell.contenu == bombe || !ras(plateau, randomX, randomY, rose, *N));
+    plateau[randomX][randomY].contenu = bombe;
   }
 
-  return(plateau);
+  return plateau;
 }
 
-//desallouage d'un plateau
+//desallouage
 int terminate(cellule **plateau, fleche *rose,int N, joueur *tabjoueurs, int *tabsock)
 {
-  for(int i=N-1;i>=0;i--){
+  for(int i = N - 1; i >= 0; i--){
     free(plateau[i]);
   }
   free(tabjoueurs);
@@ -180,13 +169,13 @@ int terminate(cellule **plateau, fleche *rose,int N, joueur *tabjoueurs, int *ta
   free(rose);
   free(tabsock);
 
-  return(0);
+  return 1;
 }
 
 void init(int *nbjoueurs, joueur **tabjoueurs, fleche **rose, int *N, cellule ***plateau)
 {
   //printf("INIT\n");
   *rose = initrose();
-  *tabjoueurs=initJoueurs(nbjoueurs);
-  *plateau=initplateau(N,*nbjoueurs,*tabjoueurs,*rose);
+  *tabjoueurs = initJoueurs(nbjoueurs);
+  *plateau = initplateau(N, *nbjoueurs, *tabjoueurs, *rose);
 }
